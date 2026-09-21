@@ -11,10 +11,11 @@ import type {
   InvoiceItem,
   InvoiceStatus,
   Payment,
+  Product,
   RecurringPlan,
 } from "@/db/schema";
 
-export type { Business, Customer, Invoice, InvoiceItem, Payment, RecurringPlan };
+export type { Business, Customer, Invoice, InvoiceItem, Payment, Product, RecurringPlan };
 export type { InvoiceStatus };
 
 export type DiscountType = "none" | "flat" | "percent";

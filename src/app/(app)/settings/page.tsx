@@ -405,7 +405,7 @@ export default function SettingsPage() {
 
           {canEdit ? (
             <div className="sticky bottom-4 flex justify-end">
-              <div className="flex items-center gap-3 rounded-xl border border-border bg-surface/90 px-4 py-3 shadow-md backdrop-blur">
+              <div className="flex flex-wrap items-center justify-end gap-3 rounded-xl border border-border bg-surface/90 px-4 py-3 shadow-md backdrop-blur">
                 <span className="text-sm text-muted">Ready to apply changes?</span>
                 <Button type="submit" loading={saving}>
                   Save settings

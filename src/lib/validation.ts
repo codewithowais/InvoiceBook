@@ -78,6 +78,17 @@ export const recurringPlanSchema = z.object({
 
 export const recurringPlanUpdateSchema = recurringPlanSchema.partial();
 
+export const productCreateSchema = z.object({
+  name: z.string().min(1, "Name is required").max(160),
+  description: z.string().max(1000).optional().nullable(),
+  unitPrice: z.number().int().min(0), // minor units (flat monthly price)
+  taxRateBps: z.number().int().min(0).max(100000).default(0),
+});
+
+export const productUpdateSchema = productCreateSchema.partial().extend({
+  isActive: z.boolean().optional(),
+});
+
 export const inviteCreateSchema = z.object({
   email: z.string().email("Valid email required"),
   role: z.enum(["admin", "staff"]).default("staff"),

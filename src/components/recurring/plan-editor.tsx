@@ -26,6 +26,7 @@ import {
   type EditorItem,
 } from "@/components/invoices/editor-utils";
 import { LineItemsEditor } from "@/components/invoices/line-items-editor";
+import { ProductPicker, type PickedProduct } from "@/components/products/product-picker";
 
 type EndMode = "never" | "endDate" | "maxCycles";
 
@@ -63,6 +64,21 @@ export function PlanEditor({
   const [saving, setSaving] = useState(false);
 
   const currency = plan?.currency ?? business.currency;
+
+  function addFromProduct(picked: PickedProduct) {
+    const row = itemFromStored(picked);
+    setItems((prev) => {
+      const emptyIdx = prev.findIndex(
+        (it) => !it.description.trim() && !it.unitPrice.trim(),
+      );
+      if (emptyIdx >= 0) {
+        const next = [...prev];
+        next[emptyIdx] = { ...row, key: prev[emptyIdx].key };
+        return next;
+      }
+      return [...prev, row];
+    });
+  }
 
   const customersQuery = useAsync<CustomerListItem[]>(async () => {
     const res = await apiGet<CustomerListItem[] | { items: CustomerListItem[] }>(
@@ -161,8 +177,8 @@ export function PlanEditor({
         </p>
       </div>
 
-      <form onSubmit={onSubmit} noValidate className="grid gap-6 lg:grid-cols-[1fr_20rem]">
-        <div className="space-y-6">
+      <form onSubmit={onSubmit} noValidate className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="min-w-0 space-y-6">
           <Card className="p-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
@@ -288,6 +304,9 @@ export function PlanEditor({
               currency={currency}
               onChange={setItems}
               error={errors.items}
+              extraAction={
+                <ProductPicker currency={currency} onPick={addFromProduct} />
+              }
             />
           </Card>
 

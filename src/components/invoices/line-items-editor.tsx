@@ -13,11 +13,14 @@ export function LineItemsEditor({
   currency,
   onChange,
   error,
+  extraAction,
 }: {
   items: EditorItem[];
   currency: string;
   onChange: (items: EditorItem[]) => void;
   error?: string;
+  /** Rendered next to the "Add line item" button (e.g. an "Add from products" control). */
+  extraAction?: React.ReactNode;
 }) {
   const symbol = getCurrencySymbol(currency);
 
@@ -33,18 +36,25 @@ export function LineItemsEditor({
 
   return (
     <div className="space-y-3">
-      {/* Column headers (desktop) */}
-      <div className="hidden grid-cols-[1fr_5rem_8rem_5.5rem_7rem_2.25rem] gap-3 px-1 text-xs font-semibold uppercase tracking-wide text-muted-2 md:grid">
-        <span>Description</span>
-        <span className="text-right">Qty</span>
-        <span className="text-right">Unit price</span>
-        <span className="text-right">Tax %</span>
-        <span className="text-right">Amount</span>
-        <span className="sr-only">Remove</span>
-      </div>
+      {/*
+        On small screens each row is a self-contained stacked card. From md up
+        the rows become a table-like grid; that grid has a fixed minimum width,
+        so we let it scroll horizontally inside its own card rather than force
+        the page (and the summary sidebar) to overflow.
+      */}
+      <div className="md:-mx-1 md:overflow-x-auto md:px-1">
+        <div className="space-y-3 md:min-w-[42rem] md:space-y-2">
+          {/* Column headers (desktop) */}
+          <div className="hidden grid-cols-[1fr_5rem_8rem_5.5rem_7rem_2.25rem] gap-3 px-1 text-xs font-semibold uppercase tracking-wide text-muted-2 md:grid">
+            <span>Description</span>
+            <span className="text-right">Qty</span>
+            <span className="text-right">Unit price</span>
+            <span className="text-right">Tax %</span>
+            <span className="text-right">Amount</span>
+            <span className="sr-only">Remove</span>
+          </div>
 
-      <div className="space-y-3 md:space-y-2">
-        {items.map((item, index) => {
+          {items.map((item, index) => {
           const line = computeItemLine(toComputeItem(item));
           return (
             <div
@@ -133,6 +143,7 @@ export function LineItemsEditor({
             </div>
           );
         })}
+        </div>
       </div>
 
       {error ? (
@@ -141,10 +152,13 @@ export function LineItemsEditor({
         </p>
       ) : null}
 
-      <Button type="button" variant="outline" size="sm" onClick={add}>
-        <Plus className="size-4" aria-hidden />
-        Add line item
-      </Button>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button type="button" variant="outline" size="sm" onClick={add}>
+          <Plus className="size-4" aria-hidden />
+          Add line item
+        </Button>
+        {extraAction}
+      </div>
     </div>
   );
 }

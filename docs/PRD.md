@@ -101,6 +101,14 @@ We use Next.js App Router with TypeScript on Vercel. The database is Neon Postgr
 
 ---
 
+# Products / Plans catalog (built)
+
+The business saves the things it sells once, so invoicing is fast and consistent. This suits a SaaS or subscription product where the same plans are billed repeatedly.
+
+1. a team member opens products and sees a list of saved plans, each with a name, an optional description, a flat monthly price, and a tax percent. they click new product and fill those fields and save. they can edit a product, or archive one they no longer sell so it stops showing in the picker but old invoices keep their details. when creating an invoice or a recurring plan, the team member clicks add from products and picks a saved plan, which drops in a line item with the name, price, and tax already filled, still editable for that one invoice. prices are flat monthly amounts, not per seat.
+
+---
+
 # Nice to have
 
 - Multiple currencies per business — pick currency per customer.

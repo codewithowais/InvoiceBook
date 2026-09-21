@@ -304,8 +304,8 @@ function InvoiceBody({
         </div>
       ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
-        <div className="space-y-6">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="min-w-0 space-y-6">
           {/* Meta */}
           <Card className="grid grid-cols-2 gap-4 p-5 sm:grid-cols-4">
             <Meta label="Issued" value={formatDate(invoice.issueDate)} />

@@ -291,6 +291,32 @@ activity_log {   // Phase 3
 
 ---
 
+# Products / Plans catalog
+
+```
+products {
+  id: uuid pk,
+  businessId: uuid ref to businesses,   // index (businessId, deletedAt)
+  name: text,
+  description: text null,
+  unitPrice: integer,             // minor units — flat monthly price
+  taxRateBps: integer default 0,
+  isActive: bool default true,
+  deletedAt: timestamp null,      // soft delete / archive
+  createdBy, updatedBy: text ref to user,
+  createdAt, updatedAt
+}
+```
+
+1) List products api. (routes => GET /api/products)
+   - filter businessId, deletedAt is null; support ?search and ?activeOnly.
+2) Create product api. (routes => POST /api/products) — Zod productCreateSchema.
+3) Get / update product apis. (routes => GET+PATCH /api/products/:id) — productUpdateSchema (name, description, unitPrice, taxRateBps, isActive).
+4) Soft delete / archive api. (routes => PATCH /api/products/:id/delete) — set deletedAt.
+All scoped to businessId (IDOR), requireUser. The invoice editor and recurring-plan editor add a line item from a selected product (name → description, unitPrice, taxRateBps; quantity defaults to 1). Products are a convenience source — line items stay editable and are never FK-linked, so editing/archiving a product never changes past invoices.
+
+---
+
 # Nice to have
 
 - Multi-currency per customer: PATCH /api/customers/:id currency.

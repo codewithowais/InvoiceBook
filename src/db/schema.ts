@@ -285,6 +285,27 @@ export const invitations = pgTable(
   (t) => [index("invitations_business_idx").on(t.businessId, t.status)],
 );
 
+export const products = pgTable(
+  "products",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    businessId: uuid("business_id")
+      .notNull()
+      .references(() => businesses.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    description: text("description"),
+    unitPrice: integer("unit_price").default(0).notNull(), // minor units (flat monthly price)
+    taxRateBps: integer("tax_rate_bps").default(0).notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    deletedAt: timestamp("deleted_at"),
+    createdBy: text("created_by").references(() => user.id),
+    updatedBy: text("updated_by").references(() => user.id),
+    createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
+    updatedAt: timestamp("updated_at").$defaultFn(() => new Date()).notNull(),
+  },
+  (t) => [index("products_business_idx").on(t.businessId, t.deletedAt)],
+);
+
 export const invoiceReminders = pgTable(
   "invoice_reminders",
   {
@@ -321,6 +342,7 @@ export type Invoice = typeof invoices.$inferSelect;
 export type InvoiceItem = typeof invoiceItems.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type RecurringPlan = typeof recurringPlans.$inferSelect;
+export type Product = typeof products.$inferSelect;
 export type Invitation = typeof invitations.$inferSelect;
 export type InvoiceReminder = typeof invoiceReminders.$inferSelect;
 export type ActivityLog = typeof activityLog.$inferSelect;
