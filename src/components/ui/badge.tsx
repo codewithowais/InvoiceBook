@@ -35,7 +35,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center justify-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium leading-none",
         variants[variant],
         className,
       )}
@@ -78,7 +78,7 @@ export function StatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset",
+        "inline-flex items-center justify-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold leading-none ring-1 ring-inset",
         STATUS_STYLES[status],
         className,
       )}
@@ -86,11 +86,11 @@ export function StatusBadge({
       {withDot ? (
         <span
           aria-hidden
-          className="size-1.5 rounded-full"
+          className="size-1.5 shrink-0 rounded-full"
           style={{ background: DOT_COLOR[status] }}
         />
       ) : null}
-      {statusLabel(status)}
+      <span className="leading-none">{statusLabel(status)}</span>
     </span>
   );
 }

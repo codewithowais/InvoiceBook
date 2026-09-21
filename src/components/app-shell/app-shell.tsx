@@ -8,6 +8,8 @@ import {
   FileText,
   LayoutDashboard,
   Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
   Repeat,
   ScrollText,
   Settings,
@@ -57,10 +59,12 @@ function isActive(pathname: string, href: string) {
 function NavLinks({
   pathname,
   role,
+  collapsed = false,
   onNavigate,
 }: {
   pathname: string;
   role: "admin" | "staff";
+  collapsed?: boolean;
   onNavigate?: () => void;
 }) {
   return (
@@ -73,20 +77,24 @@ function NavLinks({
             href={href}
             onClick={onNavigate}
             aria-current={active ? "page" : undefined}
+            title={collapsed ? label : undefined}
             className={cn(
-              "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              "group relative flex items-center rounded-lg text-sm font-medium transition-colors",
+              collapsed ? "justify-center px-0 py-2.5" : "gap-3 px-3 py-2",
               active
                 ? "bg-primary-soft text-primary-soft-fg"
                 : "text-muted hover:bg-surface-3 hover:text-foreground",
             )}
           >
-            <span
-              aria-hidden
-              className={cn(
-                "absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-primary transition-opacity",
-                active ? "opacity-100" : "opacity-0",
-              )}
-            />
+            {!collapsed ? (
+              <span
+                aria-hidden
+                className={cn(
+                  "absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-primary transition-opacity",
+                  active ? "opacity-100" : "opacity-0",
+                )}
+              />
+            ) : null}
             <Icon
               className={cn(
                 "size-[1.15rem] shrink-0 transition-colors",
@@ -94,7 +102,7 @@ function NavLinks({
               )}
               aria-hidden
             />
-            {label}
+            {collapsed ? null : label}
           </Link>
         );
       })}
@@ -113,6 +121,29 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  // Restore the collapsed preference (per-viewer convenience, best-effort).
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCollapsed(localStorage.getItem("ib-sidebar-collapsed") === "1");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  function toggleCollapsed() {
+    setCollapsed((c) => {
+      const next = !c;
+      try {
+        localStorage.setItem("ib-sidebar-collapsed", next ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }
 
   // Close the mobile drawer whenever the active route changes. This is the
   // documented "adjust state during render" pattern — no effect, no cascade.
@@ -134,22 +165,50 @@ export function AppShell({
   return (
     <div className="min-h-dvh bg-grain">
       {/* Sidebar — desktop */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-border bg-surface/80 backdrop-blur lg:flex">
-        <div className="flex h-16 items-center px-5">
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-30 hidden flex-col border-r border-border bg-surface/80 backdrop-blur transition-[width] duration-200 lg:flex",
+          collapsed ? "w-[4.5rem]" : "w-64",
+        )}
+      >
+        <div className={cn("flex h-16 items-center", collapsed ? "justify-center px-0" : "px-5")}>
           <Link href="/dashboard" aria-label="InvoiceBook home">
-            <Logo />
+            <Logo withWordmark={!collapsed} />
           </Link>
         </div>
-        <div className="flex-1 overflow-y-auto px-3 py-4">
-          <NavLinks pathname={pathname} role={user.role} />
+        <div className={cn("flex-1 overflow-y-auto py-4", collapsed ? "px-2" : "px-3")}>
+          <NavLinks pathname={pathname} role={user.role} collapsed={collapsed} />
         </div>
-        <div className="border-t border-border p-4">
-          <p className="truncate text-xs font-medium text-muted-2">
-            Signed in to
-          </p>
-          <p className="truncate text-sm font-semibold text-foreground">
-            {business.name}
-          </p>
+        <div className={cn("border-t border-border", collapsed ? "p-2" : "p-4")}>
+          {collapsed ? null : (
+            <div className="mb-2 px-1">
+              <p className="truncate text-xs font-medium text-muted-2">
+                Signed in to
+              </p>
+              <p className="truncate text-sm font-semibold text-foreground">
+                {business.name}
+              </p>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className={cn(
+              "flex items-center rounded-lg text-sm font-medium text-muted transition-colors hover:bg-surface-3 hover:text-foreground",
+              collapsed ? "w-full justify-center p-2" : "w-full gap-2 px-3 py-2",
+            )}
+          >
+            {collapsed ? (
+              <PanelLeftOpen className="size-[1.15rem] shrink-0" aria-hidden />
+            ) : (
+              <>
+                <PanelLeftClose className="size-[1.15rem] shrink-0" aria-hidden />
+                Collapse
+              </>
+            )}
+          </button>
         </div>
       </aside>
 
@@ -197,7 +256,7 @@ export function AppShell({
       ) : null}
 
       {/* Main column */}
-      <div className="lg:pl-64">
+      <div className={cn("transition-[padding] duration-200", collapsed ? "lg:pl-[4.5rem]" : "lg:pl-64")}>
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border bg-background/85 px-4 backdrop-blur sm:px-6">
           <button
             type="button"
