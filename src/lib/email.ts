@@ -2,64 +2,19 @@ import "server-only";
 import nodemailer, { type Transporter } from "nodemailer";
 
 /**
- * Provider-agnostic email over SMTP.
+ * Email delivery with three routes, chosen in this order:
  *
- * Real delivery: set SMTP_HOST / SMTP_PORT / SMTP_USER / SMTP_PASS / EMAIL_FROM.
- * Works with any free SMTP service (Gmail app password, Brevo, Mailtrap,
- * Resend SMTP, etc.).
+ *   1. Resend (recommended, free): set RESEND_API_KEY (+ EMAIL_FROM). HTTP API,
+ *      no SMTP config. https://resend.com
+ *   2. SMTP (optional fallback): set SMTP_HOST / SMTP_PORT / SMTP_USER /
+ *      SMTP_PASS.
+ *   3. Dev fallback: with nothing configured in development we spin up a free
+ *      Ethereal test inbox and return a `previewUrl` to view the message.
  *
- * No config in development: we auto-create a free Ethereal test inbox on the
- * fly and return a `previewUrl` so you can view the sent email in a browser
- * without signing up for anything. In production with no config, sending fails
- * loudly instead of silently dropping mail.
+ * In production with none of the above, sending fails loudly.
  */
 
-let cached: { transporter: Transporter; from: string; isEthereal: boolean } | null =
-  null;
-
-async function getTransport() {
-  if (cached) return cached;
-
-  const host = process.env.SMTP_HOST;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-  const from =
-    process.env.EMAIL_FROM ?? "InvoiceBook <no-reply@invoicebook.local>";
-
-  if (host && user && pass) {
-    const port = Number(process.env.SMTP_PORT ?? 587);
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465, // implicit TLS on 465, STARTTLS otherwise
-      auth: { user, pass },
-    });
-    cached = { transporter, from, isEthereal: false };
-    return cached;
-  }
-
-  if (process.env.NODE_ENV !== "production") {
-    // Free, zero-signup test inbox. Emails aren't really delivered — you open
-    // the returned preview URL to see them.
-    const testAccount = await nodemailer.createTestAccount();
-    const transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      secure: false,
-      auth: { user: testAccount.user, pass: testAccount.pass },
-    });
-    cached = {
-      transporter,
-      from: from,
-      isEthereal: true,
-    };
-    return cached;
-  }
-
-  throw new Error(
-    "Email is not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS and EMAIL_FROM.",
-  );
-}
+const DEFAULT_FROM = "InvoiceBook <onboarding@resend.dev>";
 
 export type Attachment = {
   filename: string;
@@ -67,20 +22,96 @@ export type Attachment = {
   contentType: string;
 };
 
-/**
- * Generic transactional email send (reused by invoice send + reminders).
- * Returns a `previewUrl` when using the dev Ethereal test inbox.
- */
-export async function sendMail(input: {
+export type SendResult = { messageId: string; previewUrl?: string };
+
+type SendInput = {
   to: string;
   subject: string;
   html: string;
   text: string;
   attachments?: Attachment[];
-}): Promise<SendResult> {
-  const { transporter, from, isEthereal } = await getTransport();
+};
+
+function fromAddress(): string {
+  return process.env.EMAIL_FROM ?? DEFAULT_FROM;
+}
+
+/* ------------------------------- Resend --------------------------------- */
+
+async function sendViaResend(input: SendInput): Promise<SendResult> {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: fromAddress(),
+      to: [input.to],
+      subject: input.subject,
+      html: input.html,
+      text: input.text,
+      attachments: input.attachments?.map((a) => ({
+        filename: a.filename,
+        content: a.content.toString("base64"),
+      })),
+    }),
+  });
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`Resend send failed (${res.status}): ${detail.slice(0, 300)}`);
+  }
+  const data = (await res.json()) as { id?: string };
+  return { messageId: data.id ?? "resend" };
+}
+
+/* -------------------------- SMTP / Ethereal ----------------------------- */
+
+let cachedTransport:
+  | { transporter: Transporter; isEthereal: boolean }
+  | null = null;
+
+async function getTransport() {
+  if (cachedTransport) return cachedTransport;
+
+  const host = process.env.SMTP_HOST;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (host && user && pass) {
+    const port = Number(process.env.SMTP_PORT ?? 587);
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: { user, pass },
+    });
+    cachedTransport = { transporter, isEthereal: false };
+    return cachedTransport;
+  }
+
+  if (process.env.NODE_ENV !== "production") {
+    const testAccount = await nodemailer.createTestAccount();
+    const transporter = nodemailer.createTransport({
+      host: "smtp.ethereal.email",
+      port: 587,
+      secure: false,
+      auth: { user: testAccount.user, pass: testAccount.pass },
+    });
+    cachedTransport = { transporter, isEthereal: true };
+    return cachedTransport;
+  }
+
+  throw new Error(
+    "Email is not configured. Set RESEND_API_KEY (recommended) or SMTP_* variables.",
+  );
+}
+
+async function sendViaSmtpOrEthereal(input: SendInput): Promise<SendResult> {
+  const { transporter, isEthereal } = await getTransport();
   const info = await transporter.sendMail({
-    from,
+    from: fromAddress(),
     to: input.to,
     subject: input.subject,
     text: input.text,
@@ -95,6 +126,14 @@ export async function sendMail(input: {
   return result;
 }
 
+/* ------------------------------- Public --------------------------------- */
+
+/** Generic transactional send (reused by invoice send + reminders). */
+export async function sendMail(input: SendInput): Promise<SendResult> {
+  if (process.env.RESEND_API_KEY) return sendViaResend(input);
+  return sendViaSmtpOrEthereal(input);
+}
+
 export type InvoiceEmailInput = {
   to: string;
   businessName: string;
@@ -106,13 +145,9 @@ export type InvoiceEmailInput = {
   pdfFilename: string;
 };
 
-export type SendResult = { messageId: string; previewUrl?: string };
-
 export async function sendInvoiceEmail(
   input: InvoiceEmailInput,
 ): Promise<SendResult> {
-  const { transporter, from, isEthereal } = await getTransport();
-
   const subject = `Invoice ${input.invoiceNumber} from ${input.businessName}`;
   const intro =
     input.message?.trim() ||
@@ -132,12 +167,11 @@ export async function sendInvoiceEmail(
 
   const text = `${input.businessName}\nInvoice ${input.invoiceNumber}\n\n${intro}\n\nAmount due: ${input.amountLabel}\nDue date: ${input.dueDateLabel}\n\nThe full invoice is attached as a PDF.`;
 
-  const info = await transporter.sendMail({
-    from,
+  return sendMail({
     to: input.to,
     subject,
-    text,
     html,
+    text,
     attachments: [
       {
         filename: input.pdfFilename,
@@ -146,13 +180,6 @@ export async function sendInvoiceEmail(
       },
     ],
   });
-
-  const result: SendResult = { messageId: info.messageId };
-  if (isEthereal) {
-    const url = nodemailer.getTestMessageUrl(info);
-    if (url) result.previewUrl = url;
-  }
-  return result;
 }
 
 function escapeHtml(s: string): string {
