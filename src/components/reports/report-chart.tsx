@@ -8,28 +8,27 @@ import type { ReportMonth } from "./types";
  * Month-by-month billed vs collected, drawn as an accessible grouped bar
  * chart in inline SVG (no chart library).
  *
- * Colours are a validated two-series categorical pair (data-viz method):
- *   light  teal #0e8a6f / copper #c96a1f  (CVD ΔE 9.2, all checks pass)
- *   dark   teal #1f9a80 / copper #c8763a  (all checks pass on the dark surface)
- * Both are brand-sympathetic (jade + copper) but re-stepped so they clear the
- * colourblind-separation, chroma and contrast gates in each theme. Identity is
- * never colour-alone: a legend + hover tooltip + a "table view" back it up.
+ * Colours are a two-series categorical pair matched to the "Mist" theme:
+ *   billed = steel-blue (the brand primary), collected = muted gold.
+ * Blue vs amber is the most colourblind-safe categorical pairing, and both
+ * stay calm/low-chroma to fit the theme. Identity is never colour-alone: a
+ * legend + hover tooltip + a "table view" back it up.
  */
 
 const SERIES_CSS = `
 .r-chart-scope {
-  --r-billed: #0e8a6f;
-  --r-collected: #c96a1f;
+  --r-billed: #4f7bb0;
+  --r-collected: #bd8a3c;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .r-chart-scope {
-    --r-billed: #1f9a80;
-    --r-collected: #c8763a;
+    --r-billed: #7f9ec9;
+    --r-collected: #d0a24e;
   }
 }
 :root[data-theme="dark"] .r-chart-scope {
-  --r-billed: #1f9a80;
-  --r-collected: #c8763a;
+  --r-billed: #7f9ec9;
+  --r-collected: #d0a24e;
 }
 `;
 
