@@ -1,132 +1,132 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   InvoiceFlow design system
-   A premium "financial ledger" aesthetic: deep jade accent, warm-neutral
-   paper surfaces, editorial serif headings, tabular mono figures.
-   Money-trust, not generic SaaS blue.
+   InvoiceBook design system — "Mist"
+   A calm, quiet aesthetic: soft cool-gray paper surfaces, a muted steel-blue
+   accent and a gentle periwinkle highlight. Low saturation, airy contrast —
+   easy on the eyes for long billing sessions.
    ========================================================================== */
 
 :root {
   /* Surfaces & structure ------------------------------------------------ */
-  --background: #f3f4f1; /* warm cool paper */
+  --background: #f5f7fa; /* soft cool mist */
   --surface: #ffffff;
-  --surface-2: #f9faf7;
-  --surface-3: #eef0ea;
-  --border: #e2e5df;
-  --border-strong: #d0d5cb;
-  --foreground: #17201c; /* deep ink, faint green-black */
-  --muted: #5d6b63; /* sage-gray */
-  --muted-2: #8a958d;
+  --surface-2: #f2f5f9;
+  --surface-3: #e9edf3;
+  --border: #e3e8ef;
+  --border-strong: #ccd5e0;
+  --foreground: #1e2733; /* calm slate ink */
+  --muted: #5c6675; /* slate-gray */
+  --muted-2: #8b95a5;
 
   /* Brand accent -------------------------------------------------------- */
-  --primary: #0b6b5e; /* deep jade / evergreen */
-  --primary-hover: #085346;
+  --primary: #4f6d97; /* muted steel blue */
+  --primary-hover: #405c82;
   --primary-fg: #ffffff;
-  --primary-soft: #e3f1ed; /* tint bg */
-  --primary-soft-fg: #0a5a4f;
-  --ring: #0b6b5e;
+  --primary-soft: #e8eef6; /* tint bg */
+  --primary-soft-fg: #37527a;
+  --ring: #4f6d97;
 
-  /* Warm secondary accent (copper) for decorative highlights ------------ */
-  --accent: #b3592b;
-  --accent-soft: #f6e7de;
+  /* Soft secondary accent (periwinkle) for decorative highlights -------- */
+  --accent: #7f8fb2;
+  --accent-soft: #edf0f6;
 
   /* Semantic ------------------------------------------------------------ */
-  --success: #12805c;
-  --success-soft: #d9f0e6;
-  --warning: #a4620a;
-  --warning-soft: #f7ead2;
-  --danger: #c23a34;
-  --danger-soft: #f6e0de;
-  --danger-hover: #a52e29;
+  --success: #3f8f6e;
+  --success-soft: #dcefe7;
+  --warning: #9c7327;
+  --warning-soft: #f2e9d5;
+  --danger: #b0555f;
+  --danger-soft: #f2e0e2;
+  --danger-hover: #97454e;
 
   /* Invoice status palette (bg tint / text / ring) ---------------------- */
-  --status-draft-bg: #eceef0;
-  --status-draft-fg: #5a6473;
-  --status-draft-ring: #d5d9de;
+  --status-draft-bg: #eef1f5;
+  --status-draft-fg: #5c6675;
+  --status-draft-ring: #dbe1ea;
 
-  --status-unpaid-bg: #f7ead2;
-  --status-unpaid-fg: #8a5207;
-  --status-unpaid-ring: #ecd6ac;
+  --status-unpaid-bg: #f2e9d5;
+  --status-unpaid-fg: #856520;
+  --status-unpaid-ring: #e6d6ad;
 
-  --status-partial-bg: #e0eafb;
-  --status-partial-fg: #2451b8;
-  --status-partial-ring: #c4d6f5;
+  --status-partial-bg: #e5edf7;
+  --status-partial-fg: #3a5a86;
+  --status-partial-ring: #cadaee;
 
-  --status-paid-bg: #d9f0e6;
-  --status-paid-fg: #0a6b4c;
-  --status-paid-ring: #b6e2d0;
+  --status-paid-bg: #dcefe7;
+  --status-paid-fg: #2f6f52;
+  --status-paid-ring: #b8ddca;
 
-  --status-overdue-bg: #f6e0de;
-  --status-overdue-fg: #b32e28;
-  --status-overdue-ring: #eec6c3;
+  --status-overdue-bg: #f3e1e3;
+  --status-overdue-fg: #a24651;
+  --status-overdue-ring: #e8c8cc;
 
-  --status-void-bg: #ecedee;
-  --status-void-fg: #8b929b;
-  --status-void-ring: #dcdee1;
+  --status-void-bg: #eef0f3;
+  --status-void-fg: #8b95a5;
+  --status-void-ring: #dde1e7;
 
   /* Elevation ----------------------------------------------------------- */
-  --shadow-xs: 0 1px 2px 0 rgba(23, 32, 28, 0.05);
-  --shadow-sm: 0 1px 3px rgba(23, 32, 28, 0.07), 0 1px 2px -1px rgba(23, 32, 28, 0.05);
-  --shadow-md: 0 4px 12px -2px rgba(23, 32, 28, 0.10), 0 2px 6px -2px rgba(23, 32, 28, 0.06);
-  --shadow-lg: 0 16px 40px -8px rgba(23, 32, 28, 0.20), 0 6px 16px -6px rgba(23, 32, 28, 0.12);
+  --shadow-xs: 0 1px 2px 0 rgba(30, 39, 51, 0.05);
+  --shadow-sm: 0 1px 3px rgba(30, 39, 51, 0.07), 0 1px 2px -1px rgba(30, 39, 51, 0.05);
+  --shadow-md: 0 4px 12px -2px rgba(30, 39, 51, 0.10), 0 2px 6px -2px rgba(30, 39, 51, 0.06);
+  --shadow-lg: 0 16px 40px -8px rgba(30, 39, 51, 0.18), 0 6px 16px -6px rgba(30, 39, 51, 0.10);
 }
 
 /* Dark theme — applied via system preference (guarded so a manual light
    choice wins) and via explicit [data-theme="dark"]. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --background: #0b100e;
-    --surface: #121815;
-    --surface-2: #171f1b;
-    --surface-3: #1d2621;
-    --border: #263029;
-    --border-strong: #33413a;
-    --foreground: #e8ede9;
-    --muted: #9aa8a0;
-    --muted-2: #6f7d75;
+    --background: #0f141b;
+    --surface: #161c25;
+    --surface-2: #1b222d;
+    --surface-3: #222b38;
+    --border: #2a3441;
+    --border-strong: #37424f;
+    --foreground: #e6eaf1;
+    --muted: #9aa5b5;
+    --muted-2: #6d7889;
 
-    --primary: #22b39a;
-    --primary-hover: #34c3aa;
-    --primary-fg: #04211c;
-    --primary-soft: #123029;
-    --primary-soft-fg: #6fe0c9;
-    --ring: #22b39a;
+    --primary: #7f9ec9;
+    --primary-hover: #93aed6;
+    --primary-fg: #0b1420;
+    --primary-soft: #1b2a3f;
+    --primary-soft-fg: #a9c4e6;
+    --ring: #7f9ec9;
 
-    --accent: #d9814f;
-    --accent-soft: #33231a;
+    --accent: #93a3c4;
+    --accent-soft: #1e2636;
 
-    --success: #34c088;
-    --success-soft: #12291f;
-    --warning: #d99a3a;
-    --warning-soft: #2c2213;
-    --danger: #e06a63;
-    --danger-soft: #2e1a18;
-    --danger-hover: #ec7d76;
+    --success: #56b389;
+    --success-soft: #14271f;
+    --warning: #d0a24e;
+    --warning-soft: #2a2213;
+    --danger: #d78088;
+    --danger-soft: #2c1a1d;
+    --danger-hover: #e2949b;
 
-    --status-draft-bg: #1f2830;
-    --status-draft-fg: #9fadbc;
-    --status-draft-ring: #303b45;
+    --status-draft-bg: #1f2833;
+    --status-draft-fg: #9fabbb;
+    --status-draft-ring: #303c48;
 
-    --status-unpaid-bg: #2c2213;
-    --status-unpaid-fg: #e0b163;
-    --status-unpaid-ring: #45361c;
+    --status-unpaid-bg: #2a2213;
+    --status-unpaid-fg: #dbb163;
+    --status-unpaid-ring: #443619;
 
-    --status-partial-bg: #16233d;
-    --status-partial-fg: #8fb3f2;
-    --status-partial-ring: #26375a;
+    --status-partial-bg: #172538;
+    --status-partial-fg: #93b4e2;
+    --status-partial-ring: #26385a;
 
-    --status-paid-bg: #12291f;
-    --status-paid-fg: #63d6a6;
-    --status-paid-ring: #1f4635;
+    --status-paid-bg: #14271f;
+    --status-paid-fg: #63d0a0;
+    --status-paid-ring: #1f4634;
 
-    --status-overdue-bg: #2e1a18;
-    --status-overdue-fg: #ec8580;
-    --status-overdue-ring: #4a2a27;
+    --status-overdue-bg: #2c1a1d;
+    --status-overdue-fg: #e29aa0;
+    --status-overdue-ring: #4a2b2f;
 
-    --status-void-bg: #1c2226;
-    --status-void-fg: #7c858f;
-    --status-void-ring: #2b3238;
+    --status-void-bg: #1b2127;
+    --status-void-fg: #7c8590;
+    --status-void-ring: #2a313a;
 
     --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
@@ -137,57 +137,57 @@
 
 /* Explicit dark override (theme toggle) */
 :root[data-theme="dark"] {
-  --background: #0b100e;
-  --surface: #121815;
-  --surface-2: #171f1b;
-  --surface-3: #1d2621;
-  --border: #263029;
-  --border-strong: #33413a;
-  --foreground: #e8ede9;
-  --muted: #9aa8a0;
-  --muted-2: #6f7d75;
+  --background: #0f141b;
+  --surface: #161c25;
+  --surface-2: #1b222d;
+  --surface-3: #222b38;
+  --border: #2a3441;
+  --border-strong: #37424f;
+  --foreground: #e6eaf1;
+  --muted: #9aa5b5;
+  --muted-2: #6d7889;
 
-  --primary: #22b39a;
-  --primary-hover: #34c3aa;
-  --primary-fg: #04211c;
-  --primary-soft: #123029;
-  --primary-soft-fg: #6fe0c9;
-  --ring: #22b39a;
+  --primary: #7f9ec9;
+  --primary-hover: #93aed6;
+  --primary-fg: #0b1420;
+  --primary-soft: #1b2a3f;
+  --primary-soft-fg: #a9c4e6;
+  --ring: #7f9ec9;
 
-  --accent: #d9814f;
-  --accent-soft: #33231a;
+  --accent: #93a3c4;
+  --accent-soft: #1e2636;
 
-  --success: #34c088;
-  --success-soft: #12291f;
-  --warning: #d99a3a;
-  --warning-soft: #2c2213;
-  --danger: #e06a63;
-  --danger-soft: #2e1a18;
-  --danger-hover: #ec7d76;
+  --success: #56b389;
+  --success-soft: #14271f;
+  --warning: #d0a24e;
+  --warning-soft: #2a2213;
+  --danger: #d78088;
+  --danger-soft: #2c1a1d;
+  --danger-hover: #e2949b;
 
-  --status-draft-bg: #1f2830;
-  --status-draft-fg: #9fadbc;
-  --status-draft-ring: #303b45;
+  --status-draft-bg: #1f2833;
+  --status-draft-fg: #9fabbb;
+  --status-draft-ring: #303c48;
 
-  --status-unpaid-bg: #2c2213;
-  --status-unpaid-fg: #e0b163;
-  --status-unpaid-ring: #45361c;
+  --status-unpaid-bg: #2a2213;
+  --status-unpaid-fg: #dbb163;
+  --status-unpaid-ring: #443619;
 
-  --status-partial-bg: #16233d;
-  --status-partial-fg: #8fb3f2;
-  --status-partial-ring: #26375a;
+  --status-partial-bg: #172538;
+  --status-partial-fg: #93b4e2;
+  --status-partial-ring: #26385a;
 
-  --status-paid-bg: #12291f;
-  --status-paid-fg: #63d6a6;
-  --status-paid-ring: #1f4635;
+  --status-paid-bg: #14271f;
+  --status-paid-fg: #63d0a0;
+  --status-paid-ring: #1f4634;
 
-  --status-overdue-bg: #2e1a18;
-  --status-overdue-fg: #ec8580;
-  --status-overdue-ring: #4a2a27;
+  --status-overdue-bg: #2c1a1d;
+  --status-overdue-fg: #e29aa0;
+  --status-overdue-ring: #4a2b2f;
 
-  --status-void-bg: #1c2226;
-  --status-void-fg: #7c858f;
-  --status-void-ring: #2b3238;
+  --status-void-bg: #1b2127;
+  --status-void-fg: #7c8590;
+  --status-void-ring: #2a313a;
 
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
