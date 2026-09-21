@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { env } from "@/env";
+import { logActivity } from "@/lib/activity";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -54,6 +55,14 @@ export const auth = betterAuth({
             .update(schema.user)
             .set({ businessId: biz.id, role: "admin" })
             .where(eq(schema.user.id, newUser.id));
+          await logActivity({
+            businessId: biz.id,
+            actorId: newUser.id,
+            action: "business.create",
+            entityType: "business",
+            entityId: biz.id,
+            metadata: { name: biz.name },
+          });
         },
       },
     },

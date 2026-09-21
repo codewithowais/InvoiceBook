@@ -50,6 +50,7 @@ export type TrashList = {
 
 /** Humanized "<actor> <verb>" labels, keyed by ActivityAction. */
 const ACTION_LABELS: Record<string, string> = {
+  "business.create": "created the workspace",
   "invoice.create": "created an invoice",
   "invoice.finalize": "finalized an invoice",
   "invoice.send": "emailed an invoice",

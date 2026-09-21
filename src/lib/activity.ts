@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { activityLog } from "@/db/schema";
 
 export type ActivityAction =
+  | "business.create"
   | "invoice.create"
   | "invoice.finalize"
   | "invoice.send"
