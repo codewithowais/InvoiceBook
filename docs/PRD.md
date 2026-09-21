@@ -1,4 +1,4 @@
-# InvoiceFlow — Product Requirements Document
+# InvoiceBook — Product Requirements Document
 
 **Owner:** Owais Ahmed
 **Date:** 2026-09-21

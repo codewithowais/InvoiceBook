@@ -1,4 +1,4 @@
-# InvoiceFlow — Backend Document (TRD)
+# InvoiceBook — Backend Document (TRD)
 
 Stack: Next.js App Router (route handlers), Neon Postgres, Drizzle ORM, Better Auth, Vercel Blob (private), React-PDF, Vercel Cron. Money is stored as integer minor units with a currency code. All list columns used in WHERE / ORDER BY / JOIN are indexed. Multi-row writes run inside a Drizzle transaction. Financial records are soft deleted with `deletedAt`. Zod validates every request body at the route boundary.
 
