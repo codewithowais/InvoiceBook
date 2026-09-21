@@ -261,6 +261,17 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Text selection — an explicit, theme-aware highlight so selected text stays
+   readable in both light and dark (the UA default could render it invisible). */
+::selection {
+  background-color: color-mix(in oklab, var(--primary) 28%, transparent);
+  color: var(--foreground);
+}
+::-moz-selection {
+  background-color: color-mix(in oklab, var(--primary) 28%, transparent);
+  color: var(--foreground);
+}
+
 /* Tabular figures everywhere money/quantities appear */
 .tabular,
 .font-mono {
