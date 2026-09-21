@@ -75,6 +75,7 @@ export const GET = handler(async (_req: Request, ctx: Ctx) => {
       postalCode: b.postalCode,
       country: b.country,
       logoUrl: b.logoUrl,
+      bankDetails: b.bankDetails,
     };
   }
 

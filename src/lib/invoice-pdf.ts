@@ -78,6 +78,7 @@ export async function buildInvoicePdfForBusiness(
       postalCode: b.postalCode,
       country: b.country,
       logoUrl: b.logoUrl,
+      bankDetails: b.bankDetails,
     };
   }
 

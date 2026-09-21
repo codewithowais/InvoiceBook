@@ -87,6 +87,7 @@ export const businesses = pgTable("businesses", {
   postalCode: text("postal_code"),
   country: text("country"),
   logoUrl: text("logo_url"),
+  bankDetails: text("bank_details"),
   defaultCurrency: text("default_currency").default("USD").notNull(),
   invoicePrefix: text("invoice_prefix").default("INV").notNull(),
   invoiceSeq: integer("invoice_seq").default(0).notNull(),

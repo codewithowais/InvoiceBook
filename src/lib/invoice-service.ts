@@ -40,6 +40,7 @@ export type BusinessSnapshot = {
   postalCode: string | null;
   country: string | null;
   logoUrl: string | null;
+  bankDetails: string | null;
 };
 
 /**
@@ -93,6 +94,7 @@ function buildBusinessSnapshot(b: {
   postalCode: string | null;
   country: string | null;
   logoUrl: string | null;
+  bankDetails: string | null;
 }): BusinessSnapshot {
   return {
     id: b.id,
@@ -104,6 +106,7 @@ function buildBusinessSnapshot(b: {
     postalCode: b.postalCode,
     country: b.country,
     logoUrl: b.logoUrl,
+    bankDetails: b.bankDetails,
   };
 }
 

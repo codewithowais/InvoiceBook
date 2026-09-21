@@ -11,6 +11,7 @@ export const businessUpdateSchema = z.object({
   postalCode: z.string().max(20).optional().nullable(),
   country: z.string().max(100).optional().nullable(),
   logoUrl: z.string().url().optional().nullable(),
+  bankDetails: z.string().max(2000).optional().nullable(),
   defaultCurrency: z.string().length(3).default("USD"),
   invoicePrefix: z.string().min(1).max(10).default("INV"),
 });

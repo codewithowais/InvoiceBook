@@ -55,12 +55,15 @@ const styles = StyleSheet.create({
   bizName: { fontSize: 15, fontFamily: "Helvetica-Bold", color: C.ink },
   addr: { color: C.muted, fontSize: 9 },
 
-  right: { alignItems: "flex-end" },
-  invoiceWord: { fontSize: 26, fontFamily: "Helvetica-Bold", color: C.primary, letterSpacing: 3, marginBottom: 8 },
-  metaRow: { flexDirection: "row", justifyContent: "flex-end", marginBottom: 2 },
-  metaLabel: { color: C.muted, fontSize: 9, width: 60, textAlign: "right" },
-  metaValue: { color: C.ink, fontFamily: "Helvetica-Bold", fontSize: 9.5, width: 90, textAlign: "right" },
-  badge: { marginTop: 8, paddingVertical: 4, paddingHorizontal: 10, borderRadius: 20, fontSize: 8.5, fontFamily: "Helvetica-Bold", letterSpacing: 0.5 },
+  right: { alignItems: "flex-end", width: "40%" },
+  invoiceWord: { fontSize: 24, fontFamily: "Helvetica-Bold", color: C.primary, letterSpacing: 2, marginBottom: 12 },
+  metaBox: { backgroundColor: C.soft, borderRadius: 6, paddingVertical: 8, paddingHorizontal: 12, width: 200 },
+  metaRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 2 },
+  metaLabel: { color: C.muted, fontSize: 9 },
+  metaValue: { color: C.ink, fontFamily: "Helvetica-Bold", fontSize: 9.5 },
+  badge: { marginTop: 10, alignSelf: "flex-end", paddingVertical: 4, paddingHorizontal: 11, borderRadius: 20, fontSize: 8.5, fontFamily: "Helvetica-Bold", letterSpacing: 0.5 },
+  dueDate: { color: C.muted, fontSize: 9, marginTop: 3 },
+  bank: { marginTop: 22, backgroundColor: C.softer, borderRadius: 6, padding: 12, borderWidth: 1, borderColor: C.line },
 
   billRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 24 },
   block: { width: "48%" },
@@ -128,7 +131,7 @@ function InvoiceDocument({ invoice, items, business, customer }: RenderInvoiceIn
         <View style={styles.body}>
           {/* Header */}
           <View style={styles.header}>
-            <View style={{ width: "55%" }}>
+            <View style={{ width: "56%" }}>
               {business.logoUrl ? (
                 <Image style={styles.logo} src={business.logoUrl} />
               ) : (
@@ -149,17 +152,19 @@ function InvoiceDocument({ invoice, items, business, customer }: RenderInvoiceIn
 
             <View style={styles.right}>
               <Text style={styles.invoiceWord}>INVOICE</Text>
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>Number</Text>
-                <Text style={styles.metaValue}>{invoice.number ?? "DRAFT"}</Text>
-              </View>
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>Issued</Text>
-                <Text style={styles.metaValue}>{formatDate(invoice.issueDate)}</Text>
-              </View>
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>Due</Text>
-                <Text style={styles.metaValue}>{formatDate(invoice.dueDate)}</Text>
+              <View style={styles.metaBox}>
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>Number</Text>
+                  <Text style={styles.metaValue}>{invoice.number ?? "DRAFT"}</Text>
+                </View>
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>Issued</Text>
+                  <Text style={styles.metaValue}>{formatDate(invoice.issueDate)}</Text>
+                </View>
+                <View style={styles.metaRow}>
+                  <Text style={styles.metaLabel}>Due</Text>
+                  <Text style={styles.metaValue}>{formatDate(invoice.dueDate)}</Text>
+                </View>
               </View>
               <Text style={[styles.badge, { backgroundColor: status.bg, color: status.fg }]}>
                 {statusLabel(invoice.status).toUpperCase()}
@@ -183,7 +188,7 @@ function InvoiceDocument({ invoice, items, business, customer }: RenderInvoiceIn
               <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 18, color: C.ink }}>
                 {formatMoney(balance, currency)}
               </Text>
-              <Text style={styles.addr}>Due {formatDate(invoice.dueDate)}</Text>
+              <Text style={styles.dueDate}>Due {formatDate(invoice.dueDate)}</Text>
             </View>
           </View>
 
@@ -240,6 +245,14 @@ function InvoiceDocument({ invoice, items, business, customer }: RenderInvoiceIn
               ) : null}
             </View>
           </View>
+
+          {/* Payment / bank details */}
+          {business.bankDetails ? (
+            <View style={styles.bank}>
+              <Text style={styles.footHead}>Payment Details</Text>
+              <Text style={styles.footText}>{business.bankDetails}</Text>
+            </View>
+          ) : null}
 
           {/* Notes & terms */}
           {invoice.notes || invoice.terms ? (

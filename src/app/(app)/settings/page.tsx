@@ -10,9 +10,10 @@ import { CURRENCIES, currencyLabel } from "@/lib/currency";
 import { useToast } from "@/components/ui/toast";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Field } from "@/components/ui/field";
 import { LoadingBlock } from "@/components/ui/spinner";
 import { ErrorState } from "@/components/ui/empty-state";
@@ -27,6 +28,7 @@ type Form = {
   postalCode: string;
   country: string;
   logoUrl: string;
+  bankDetails: string;
   defaultCurrency: string;
   invoicePrefix: string;
 };
@@ -41,6 +43,7 @@ function toForm(b: Business): Form {
     postalCode: b.postalCode ?? "",
     country: b.country ?? "",
     logoUrl: b.logoUrl ?? "",
+    bankDetails: b.bankDetails ?? "",
     defaultCurrency: b.defaultCurrency ?? "USD",
     invoicePrefix: b.invoicePrefix ?? "INV",
   };
@@ -122,6 +125,7 @@ export default function SettingsPage() {
         postalCode: form.postalCode.trim() || null,
         country: form.country.trim() || null,
         logoUrl: form.logoUrl.trim() || null,
+        bankDetails: form.bankDetails.trim() || null,
         defaultCurrency: form.defaultCurrency,
         invoicePrefix: form.invoicePrefix.trim(),
       });
@@ -355,20 +359,47 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Team — Phase 2 */}
+          {/* Payment details — shown on invoice PDFs */}
           <Card>
-            <CardContent className="flex items-start gap-3 py-5">
+            <CardHeader>
+              <CardTitle>Payment details</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Field
+                label="Bank / payment instructions"
+                hint="Shown in a 'Payment Details' block on every invoice PDF. Include bank name, account title, account number, IBAN, etc."
+              >
+                {(props) => (
+                  <Textarea
+                    {...props}
+                    rows={4}
+                    value={form.bankDetails}
+                    disabled={!canEdit}
+                    onChange={(e) => set("bankDetails", e.target.value)}
+                    placeholder={"Bank: HBL\nAccount title: Muhammad Owais Ahmed\nAccount #: 1234-5678901234\nIBAN: PK00HABB0000123456789012"}
+                  />
+                )}
+              </Field>
+            </CardContent>
+          </Card>
+
+          {/* Team management */}
+          <Card>
+            <CardContent className="flex items-center gap-3 py-5">
               <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-surface-3 text-muted-2">
                 <Users className="size-5" aria-hidden />
               </span>
-              <div>
+              <div className="flex-1">
                 <p className="text-sm font-semibold text-foreground">
                   Team management
                 </p>
                 <p className="mt-0.5 text-sm text-muted">
-                  Inviting teammates and assigning roles is coming in Phase 2.
+                  Invite teammates and assign roles.
                 </p>
               </div>
+              <ButtonLink href="/team" variant="outline" size="sm">
+                Manage team
+              </ButtonLink>
             </CardContent>
           </Card>
 

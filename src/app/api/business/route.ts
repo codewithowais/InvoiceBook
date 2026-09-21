@@ -33,6 +33,7 @@ export const PATCH = handler(async (req: Request) => {
       postalCode: body.postalCode ?? null,
       country: body.country ?? null,
       logoUrl: body.logoUrl ?? null,
+      bankDetails: body.bankDetails ?? null,
       defaultCurrency: body.defaultCurrency,
       invoicePrefix: body.invoicePrefix,
       updatedAt: new Date(),
