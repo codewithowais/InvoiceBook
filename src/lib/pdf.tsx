@@ -9,6 +9,7 @@ import {
   Font,
   renderToBuffer,
 } from "@react-pdf/renderer";
+import QRCode from "qrcode";
 
 // Never break words mid-way with a hyphen (e.g. "Busi-ness"); wrap at spaces.
 Font.registerHyphenationCallback((word) => [word]);
@@ -67,8 +68,12 @@ const styles = StyleSheet.create({
   metaLabel: { color: C.muted, fontSize: 9 },
   metaValue: { color: C.ink, fontFamily: "Helvetica-Bold", fontSize: 9.5 },
   badge: { marginTop: 10, alignSelf: "flex-end", paddingVertical: 4, paddingHorizontal: 11, borderRadius: 20, fontSize: 8.5, fontFamily: "Helvetica-Bold", letterSpacing: 0.5 },
-  dueDate: { color: C.muted, fontSize: 9, marginTop: 3 },
-  bank: { marginTop: 22, backgroundColor: C.softer, borderRadius: 6, padding: 12, borderWidth: 1, borderColor: C.line },
+  amountDue: { fontFamily: "Helvetica-Bold", fontSize: 18, color: C.ink },
+  bank: { marginTop: 22, backgroundColor: C.softer, borderRadius: 6, padding: 12, borderWidth: 1, borderColor: C.line, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  bankText: { flex: 1, paddingRight: 14 },
+  qrWrap: { alignItems: "center" },
+  qr: { width: 74, height: 74 },
+  qrCaption: { fontSize: 7.5, color: C.muted, marginTop: 3 },
 
   billRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 24 },
   block: { width: "48%" },
@@ -118,7 +123,13 @@ function addressLines(b: BusinessSnapshot): string[] {
   ].filter((l): l is string => Boolean(l && l.trim()));
 }
 
-function InvoiceDocument({ invoice, items, business, customer }: RenderInvoiceInput) {
+function InvoiceDocument({
+  invoice,
+  items,
+  business,
+  customer,
+  qr,
+}: RenderInvoiceInput & { qr?: string | null }) {
   const currency = invoice.currency;
   const status = STATUS_COLORS[invoice.status] ?? STATUS_COLORS.draft;
   const discountAmount = invoice.subtotal + invoice.taxTotal - invoice.total;
@@ -188,10 +199,7 @@ function InvoiceDocument({ invoice, items, business, customer }: RenderInvoiceIn
             </View>
             <View style={[styles.block, { alignItems: "flex-end" }]}>
               <Text style={styles.eyebrow}>AMOUNT DUE</Text>
-              <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 18, color: C.ink }}>
-                {formatMoney(balance, currency)}
-              </Text>
-              <Text style={styles.dueDate}>Due {formatDate(invoice.dueDate)}</Text>
+              <Text style={styles.amountDue}>{formatMoney(balance, currency)}</Text>
             </View>
           </View>
 
@@ -249,11 +257,19 @@ function InvoiceDocument({ invoice, items, business, customer }: RenderInvoiceIn
             </View>
           </View>
 
-          {/* Payment / bank details */}
+          {/* Payment / bank details + QR */}
           {business.bankDetails ? (
             <View style={styles.bank}>
-              <Text style={styles.footHead}>Payment Details</Text>
-              <Text style={styles.footText}>{business.bankDetails}</Text>
+              <View style={styles.bankText}>
+                <Text style={styles.footHead}>Payment Details</Text>
+                <Text style={styles.footText}>{business.bankDetails}</Text>
+              </View>
+              {qr ? (
+                <View style={styles.qrWrap}>
+                  <Image style={styles.qr} src={qr} />
+                  <Text style={styles.qrCaption}>Scan to pay</Text>
+                </View>
+              ) : null}
             </View>
           ) : null}
 
@@ -289,6 +305,34 @@ function InvoiceDocument({ invoice, items, business, customer }: RenderInvoiceIn
 }
 
 /** Render a finalized (or draft) invoice to a PDF Buffer. */
-export function renderInvoicePdf(input: RenderInvoiceInput): Promise<Buffer> {
-  return renderToBuffer(<InvoiceDocument {...input} />);
+export async function renderInvoicePdf(input: RenderInvoiceInput): Promise<Buffer> {
+  const { invoice, business } = input;
+  let qr: string | null = null;
+
+  // A "scan to pay" QR encoding the payment summary + bank details, so a
+  // customer can capture where/how much to pay from their phone.
+  if (business.bankDetails) {
+    const balance = invoice.total - invoice.amountPaid;
+    const payload = [
+      `Payment to: ${business.name}`,
+      invoice.number ? `Invoice: ${invoice.number}` : null,
+      `Amount: ${formatMoney(balance, invoice.currency)}`,
+      "",
+      business.bankDetails,
+    ]
+      .filter((l): l is string => l !== null)
+      .join("\n");
+    try {
+      qr = await QRCode.toDataURL(payload, {
+        margin: 1,
+        width: 220,
+        errorCorrectionLevel: "M",
+        color: { dark: "#1f2733", light: "#ffffff" },
+      });
+    } catch {
+      qr = null;
+    }
+  }
+
+  return renderToBuffer(<InvoiceDocument {...input} qr={qr} />);
 }
