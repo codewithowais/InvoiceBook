@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Info, Lock, UserPlus } from "lucide-react";
+import { ArrowLeft, Info, UserPlus } from "lucide-react";
 import { apiGet, apiPatch, apiPost, asArray, ApiError } from "@/lib/fetcher";
 import { useAsync } from "@/lib/use-async";
 import { useBusiness } from "@/components/app-shell/business-context";
@@ -58,6 +58,7 @@ export function PlanEditor({
   );
   const [notes, setNotes] = useState(plan?.notes ?? "");
   const [terms, setTerms] = useState(plan?.terms ?? "");
+  const [autoEmail, setAutoEmail] = useState<boolean>(plan?.autoEmail ?? false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 
@@ -109,7 +110,7 @@ export function PlanEditor({
       startDate,
       endDate: endMode === "endDate" ? endDate : null,
       maxCycles: endMode === "maxCycles" ? parseInt(maxCycles, 10) : null,
-      autoEmail: false,
+      autoEmail,
       items: toApiItems(items.filter((it) => it.description.trim())),
       notes: notes.trim() || null,
       terms: terms.trim() || null,
@@ -343,19 +344,22 @@ export function PlanEditor({
             </div>
 
             <div className="space-y-3 border-t border-border bg-surface-2 px-5 py-4">
-              <label className="flex cursor-not-allowed items-start gap-2.5 opacity-70">
+              <label className="flex cursor-pointer items-start gap-2.5">
                 <input
                   type="checkbox"
-                  disabled
-                  className="mt-0.5 size-4 rounded border-border-strong"
-                  aria-label="Auto-email invoices (Phase 2)"
+                  checked={autoEmail}
+                  onChange={(e) => setAutoEmail(e.target.checked)}
+                  className="mt-0.5 size-4 rounded border-border-strong accent-[var(--primary)]"
+                  aria-label="Auto-email each generated invoice to the customer"
                 />
                 <span className="text-sm">
-                  <span className="flex items-center gap-1.5 font-medium text-foreground">
-                    <Lock className="size-3.5" aria-hidden />
+                  <span className="font-medium text-foreground">
                     Auto-email each invoice
                   </span>
-                  <span className="text-xs text-muted-2">Coming in Phase 2</span>
+                  <span className="block text-xs text-muted-2">
+                    Emails the customer the PDF when each month&apos;s invoice is
+                    generated. Requires SMTP to be configured.
+                  </span>
                 </span>
               </label>
 
