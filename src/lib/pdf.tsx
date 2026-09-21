@@ -20,89 +20,86 @@ export type RenderInvoiceInput = {
   customer: CustomerSnapshot;
 };
 
+/* Palette — matches the app's calm "Mist" theme. */
+const C = {
+  primary: "#4f6d97",
+  primaryDark: "#37527a",
+  ink: "#1f2733",
+  body: "#3f4855",
+  muted: "#6b7480",
+  faint: "#9aa4b2",
+  line: "#e3e8ef",
+  soft: "#f2f5f9",
+  softer: "#f7f9fc",
+  white: "#ffffff",
+};
+
+const STATUS_COLORS: Record<string, { bg: string; fg: string }> = {
+  draft: { bg: "#eef1f5", fg: "#5c6675" },
+  unpaid: { bg: "#f6ecd8", fg: "#8a6510" },
+  partially_paid: { bg: "#e5edf7", fg: "#37527a" },
+  paid: { bg: "#dcefe7", fg: "#2f6f52" },
+  void: { bg: "#eef0f3", fg: "#8b95a5" },
+};
+
 const styles = StyleSheet.create({
-  page: {
-    padding: 40,
-    fontSize: 10,
-    fontFamily: "Helvetica",
-    color: "#1f2937",
-    lineHeight: 1.4,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 28,
-  },
-  logo: { width: 120, maxHeight: 56, objectFit: "contain", marginBottom: 8 },
-  bizName: { fontSize: 16, fontFamily: "Helvetica-Bold", marginBottom: 4 },
-  muted: { color: "#6b7280" },
-  right: { textAlign: "right" },
-  invoiceTitle: {
-    fontSize: 22,
-    fontFamily: "Helvetica-Bold",
-    color: "#111827",
-    marginBottom: 6,
-  },
-  metaRow: { flexDirection: "row", justifyContent: "flex-end", gap: 8 },
-  metaLabel: { color: "#6b7280", width: 70, textAlign: "right" },
-  metaValue: { fontFamily: "Helvetica-Bold", width: 90, textAlign: "right" },
-  statusBadge: {
-    marginTop: 6,
-    alignSelf: "flex-end",
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    borderRadius: 4,
-    backgroundColor: "#eef2ff",
-    color: "#3730a3",
-    fontSize: 9,
-    fontFamily: "Helvetica-Bold",
-  },
-  section: { marginBottom: 20 },
-  billTo: { fontSize: 9, color: "#6b7280", marginBottom: 4, textTransform: "uppercase" },
-  custName: { fontFamily: "Helvetica-Bold", fontSize: 11, marginBottom: 2 },
-  table: { marginTop: 8 },
-  thead: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "#111827",
-    paddingBottom: 6,
-    marginBottom: 2,
-  },
-  trow: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
-    paddingVertical: 6,
-  },
-  cDesc: { width: "42%" },
-  cQty: { width: "12%", textAlign: "right" },
-  cPrice: { width: "16%", textAlign: "right" },
-  cTax: { width: "12%", textAlign: "right" },
-  cTotal: { width: "18%", textAlign: "right" },
-  thText: { fontFamily: "Helvetica-Bold", fontSize: 9 },
-  totals: { marginTop: 16, alignSelf: "flex-end", width: "45%" },
-  totalRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 3,
-  },
-  grandRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 6,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#111827",
-  },
-  grandText: { fontFamily: "Helvetica-Bold", fontSize: 13 },
-  footer: {
-    marginTop: 30,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
-  },
-  footerHead: { fontFamily: "Helvetica-Bold", marginBottom: 3 },
+  page: { paddingTop: 0, paddingBottom: 48, fontSize: 9.5, fontFamily: "Helvetica", color: C.body, lineHeight: 1.5 },
+  accentBar: { height: 6, backgroundColor: C.primary },
+  body: { paddingHorizontal: 44, paddingTop: 30 },
+
+  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 26 },
+  brandRow: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
+  monogram: { width: 34, height: 34, borderRadius: 8, backgroundColor: C.primary, color: C.white, marginRight: 10, alignItems: "center", justifyContent: "center" },
+  monogramText: { color: C.white, fontFamily: "Helvetica-Bold", fontSize: 14 },
+  logo: { width: 130, maxHeight: 52, objectFit: "contain", marginBottom: 8 },
+  bizName: { fontSize: 15, fontFamily: "Helvetica-Bold", color: C.ink },
+  addr: { color: C.muted, fontSize: 9 },
+
+  right: { alignItems: "flex-end" },
+  invoiceWord: { fontSize: 26, fontFamily: "Helvetica-Bold", color: C.primary, letterSpacing: 3, marginBottom: 8 },
+  metaRow: { flexDirection: "row", justifyContent: "flex-end", marginBottom: 2 },
+  metaLabel: { color: C.muted, fontSize: 9, width: 60, textAlign: "right" },
+  metaValue: { color: C.ink, fontFamily: "Helvetica-Bold", fontSize: 9.5, width: 90, textAlign: "right" },
+  badge: { marginTop: 8, paddingVertical: 4, paddingHorizontal: 10, borderRadius: 20, fontSize: 8.5, fontFamily: "Helvetica-Bold", letterSpacing: 0.5 },
+
+  billRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 24 },
+  block: { width: "48%" },
+  eyebrow: { fontSize: 8, color: C.faint, fontFamily: "Helvetica-Bold", letterSpacing: 1, marginBottom: 5 },
+  custName: { fontFamily: "Helvetica-Bold", fontSize: 11.5, color: C.ink, marginBottom: 2 },
+
+  thead: { flexDirection: "row", backgroundColor: C.primary, borderRadius: 5, paddingVertical: 7, paddingHorizontal: 10 },
+  th: { color: C.white, fontFamily: "Helvetica-Bold", fontSize: 8.5, letterSpacing: 0.3 },
+  trow: { flexDirection: "row", paddingVertical: 9, paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: C.line },
+  cDesc: { width: "44%" }, cQty: { width: "12%", textAlign: "right" }, cPrice: { width: "17%", textAlign: "right" }, cTax: { width: "10%", textAlign: "right" }, cTotal: { width: "17%", textAlign: "right" },
+  itemName: { color: C.ink, fontFamily: "Helvetica-Bold", fontSize: 9.5 },
+  cell: { color: C.body, fontSize: 9.5 },
+
+  totalsWrap: { flexDirection: "row", justifyContent: "flex-end", marginTop: 18 },
+  totals: { width: "46%" },
+  tRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 3 },
+  tLabel: { color: C.muted }, tVal: { color: C.ink, fontFamily: "Helvetica-Bold" },
+  grand: { flexDirection: "row", justifyContent: "space-between", marginTop: 7, paddingTop: 9, borderTopWidth: 1.5, borderTopColor: C.ink },
+  grandLabel: { fontFamily: "Helvetica-Bold", fontSize: 12, color: C.ink },
+  grandVal: { fontFamily: "Helvetica-Bold", fontSize: 12, color: C.ink },
+
+  due: { marginTop: 12, backgroundColor: C.soft, borderRadius: 6, padding: 12, flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderLeftWidth: 3, borderLeftColor: C.primary },
+  dueLabel: { color: C.primaryDark, fontFamily: "Helvetica-Bold", fontSize: 10 },
+  dueVal: { color: C.primaryDark, fontFamily: "Helvetica-Bold", fontSize: 15 },
+
+  footer: { marginTop: 26, flexDirection: "row", justifyContent: "space-between" },
+  footBlock: { width: "48%" },
+  footHead: { fontFamily: "Helvetica-Bold", color: C.ink, fontSize: 9, marginBottom: 3 },
+  footText: { color: C.muted, fontSize: 8.5 },
+  pageFooter: { position: "absolute", bottom: 22, left: 44, right: 44, borderTopWidth: 1, borderTopColor: C.line, paddingTop: 8, flexDirection: "row", justifyContent: "space-between" },
+  pageFootText: { color: C.faint, fontSize: 8 },
 });
+
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const first = parts[0]?.[0] ?? "";
+  const second = parts.length > 1 ? parts[parts.length - 1][0] : "";
+  return (first + second).toUpperCase() || "IB";
+}
 
 function addressLines(b: BusinessSnapshot): string[] {
   return [
@@ -115,138 +112,161 @@ function addressLines(b: BusinessSnapshot): string[] {
 
 function InvoiceDocument({ invoice, items, business, customer }: RenderInvoiceInput) {
   const currency = invoice.currency;
+  const status = STATUS_COLORS[invoice.status] ?? STATUS_COLORS.draft;
+  const discountAmount = invoice.subtotal + invoice.taxTotal - invoice.total;
+  const balance = invoice.total - invoice.amountPaid;
+  const hasDiscount = discountAmount > 0 && invoice.discountType !== "none";
   const discountLabel =
     invoice.discountType === "percent"
-      ? `Discount (${(invoice.discountValue / 100).toFixed(2)}%)`
+      ? `Discount (${(invoice.discountValue / 100).toFixed(invoice.discountValue % 100 ? 2 : 0)}%)`
       : "Discount";
-  // Discount amount recomputed for display from stored totals.
-  const discountAmount =
-    invoice.subtotal + invoice.taxTotal - invoice.total;
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <View>
-            {business.logoUrl ? (
-              <Image style={styles.logo} src={business.logoUrl} />
-            ) : null}
-            <Text style={styles.bizName}>{business.name}</Text>
-            {addressLines(business).map((line, i) => (
-              <Text key={i} style={styles.muted}>
-                {line}
+        <View style={styles.accentBar} />
+        <View style={styles.body}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={{ width: "55%" }}>
+              {business.logoUrl ? (
+                <Image style={styles.logo} src={business.logoUrl} />
+              ) : (
+                <View style={styles.brandRow}>
+                  <View style={styles.monogram}>
+                    <Text style={styles.monogramText}>{initials(business.name)}</Text>
+                  </View>
+                  <Text style={styles.bizName}>{business.name}</Text>
+                </View>
+              )}
+              {business.logoUrl ? (
+                <Text style={[styles.bizName, { marginBottom: 4 }]}>{business.name}</Text>
+              ) : null}
+              {addressLines(business).map((line, i) => (
+                <Text key={i} style={styles.addr}>{line}</Text>
+              ))}
+            </View>
+
+            <View style={styles.right}>
+              <Text style={styles.invoiceWord}>INVOICE</Text>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>Number</Text>
+                <Text style={styles.metaValue}>{invoice.number ?? "DRAFT"}</Text>
+              </View>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>Issued</Text>
+                <Text style={styles.metaValue}>{formatDate(invoice.issueDate)}</Text>
+              </View>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>Due</Text>
+                <Text style={styles.metaValue}>{formatDate(invoice.dueDate)}</Text>
+              </View>
+              <Text style={[styles.badge, { backgroundColor: status.bg, color: status.fg }]}>
+                {statusLabel(invoice.status).toUpperCase()}
               </Text>
-            ))}
+            </View>
           </View>
 
-          <View style={styles.right}>
-            <Text style={styles.invoiceTitle}>INVOICE</Text>
-            <View style={styles.metaRow}>
-              <Text style={styles.metaLabel}>Number</Text>
-              <Text style={styles.metaValue}>{invoice.number ?? "DRAFT"}</Text>
+          {/* Bill to */}
+          <View style={styles.billRow}>
+            <View style={styles.block}>
+              <Text style={styles.eyebrow}>BILL TO</Text>
+              <Text style={styles.custName}>{customer.name}</Text>
+              {customer.email ? <Text style={styles.addr}>{customer.email}</Text> : null}
+              {customer.phone ? <Text style={styles.addr}>{customer.phone}</Text> : null}
+              {customer.billingAddress ? (
+                <Text style={styles.addr}>{customer.billingAddress}</Text>
+              ) : null}
             </View>
-            <View style={styles.metaRow}>
-              <Text style={styles.metaLabel}>Issued</Text>
-              <Text style={styles.metaValue}>{formatDate(invoice.issueDate)}</Text>
+            <View style={[styles.block, { alignItems: "flex-end" }]}>
+              <Text style={styles.eyebrow}>AMOUNT DUE</Text>
+              <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 18, color: C.ink }}>
+                {formatMoney(balance, currency)}
+              </Text>
+              <Text style={styles.addr}>Due {formatDate(invoice.dueDate)}</Text>
             </View>
-            <View style={styles.metaRow}>
-              <Text style={styles.metaLabel}>Due</Text>
-              <Text style={styles.metaValue}>{formatDate(invoice.dueDate)}</Text>
-            </View>
-            <Text style={styles.statusBadge}>
-              {statusLabel(invoice.status).toUpperCase()}
-            </Text>
           </View>
-        </View>
 
-        <View style={styles.section}>
-          <Text style={styles.billTo}>Bill To</Text>
-          <Text style={styles.custName}>{customer.name}</Text>
-          {customer.email ? <Text style={styles.muted}>{customer.email}</Text> : null}
-          {customer.phone ? <Text style={styles.muted}>{customer.phone}</Text> : null}
-          {customer.billingAddress ? (
-            <Text style={styles.muted}>{customer.billingAddress}</Text>
-          ) : null}
-        </View>
-
-        <View style={styles.table}>
+          {/* Line items */}
           <View style={styles.thead}>
-            <Text style={[styles.cDesc, styles.thText]}>Description</Text>
-            <Text style={[styles.cQty, styles.thText]}>Qty</Text>
-            <Text style={[styles.cPrice, styles.thText]}>Unit Price</Text>
-            <Text style={[styles.cTax, styles.thText]}>Tax</Text>
-            <Text style={[styles.cTotal, styles.thText]}>Total</Text>
+            <Text style={[styles.cDesc, styles.th]}>DESCRIPTION</Text>
+            <Text style={[styles.cQty, styles.th]}>QTY</Text>
+            <Text style={[styles.cPrice, styles.th]}>UNIT PRICE</Text>
+            <Text style={[styles.cTax, styles.th]}>TAX</Text>
+            <Text style={[styles.cTotal, styles.th]}>AMOUNT</Text>
           </View>
           {items.map((it) => (
             <View key={it.id} style={styles.trow}>
-              <Text style={styles.cDesc}>{it.description}</Text>
-              <Text style={styles.cQty}>{formatQty(it.quantity)}</Text>
-              <Text style={styles.cPrice}>
-                {formatMoney(it.unitPrice, currency)}
-              </Text>
-              <Text style={styles.cTax}>
-                {(it.taxRateBps / 100).toFixed(2)}%
-              </Text>
-              <Text style={styles.cTotal}>
-                {formatMoney(it.lineTotal, currency)}
-              </Text>
+              <Text style={[styles.cDesc, styles.itemName]}>{it.description}</Text>
+              <Text style={[styles.cQty, styles.cell]}>{formatQty(it.quantity)}</Text>
+              <Text style={[styles.cPrice, styles.cell]}>{formatMoney(it.unitPrice, currency)}</Text>
+              <Text style={[styles.cTax, styles.cell]}>{it.taxRateBps ? `${(it.taxRateBps / 100).toFixed(it.taxRateBps % 100 ? 2 : 0)}%` : "—"}</Text>
+              <Text style={[styles.cTotal, styles.itemName]}>{formatMoney(it.lineTotal, currency)}</Text>
             </View>
           ))}
-        </View>
 
-        <View style={styles.totals}>
-          <View style={styles.totalRow}>
-            <Text style={styles.muted}>Subtotal</Text>
-            <Text>{formatMoney(invoice.subtotal, currency)}</Text>
-          </View>
-          {discountAmount > 0 ? (
-            <View style={styles.totalRow}>
-              <Text style={styles.muted}>{discountLabel}</Text>
-              <Text>-{formatMoney(discountAmount, currency)}</Text>
-            </View>
-          ) : null}
-          <View style={styles.totalRow}>
-            <Text style={styles.muted}>Tax</Text>
-            <Text>{formatMoney(invoice.taxTotal, currency)}</Text>
-          </View>
-          <View style={styles.grandRow}>
-            <Text style={styles.grandText}>Total</Text>
-            <Text style={styles.grandText}>
-              {formatMoney(invoice.total, currency)}
-            </Text>
-          </View>
-          {invoice.amountPaid > 0 ? (
-            <View style={styles.totalRow}>
-              <Text style={styles.muted}>Amount Paid</Text>
-              <Text>-{formatMoney(invoice.amountPaid, currency)}</Text>
-            </View>
-          ) : null}
-          {invoice.amountPaid > 0 ? (
-            <View style={styles.totalRow}>
-              <Text style={styles.muted}>Balance Due</Text>
-              <Text>
-                {formatMoney(invoice.total - invoice.amountPaid, currency)}
-              </Text>
-            </View>
-          ) : null}
-        </View>
-
-        {invoice.notes || invoice.terms ? (
-          <View style={styles.footer}>
-            {invoice.notes ? (
-              <>
-                <Text style={styles.footerHead}>Notes</Text>
-                <Text style={styles.muted}>{invoice.notes}</Text>
-              </>
-            ) : null}
-            {invoice.terms ? (
-              <View style={{ marginTop: 8 }}>
-                <Text style={styles.footerHead}>Terms</Text>
-                <Text style={styles.muted}>{invoice.terms}</Text>
+          {/* Totals */}
+          <View style={styles.totalsWrap}>
+            <View style={styles.totals}>
+              <View style={styles.tRow}>
+                <Text style={styles.tLabel}>Subtotal</Text>
+                <Text style={styles.tVal}>{formatMoney(invoice.subtotal, currency)}</Text>
               </View>
-            ) : null}
+              {hasDiscount ? (
+                <View style={styles.tRow}>
+                  <Text style={styles.tLabel}>{discountLabel}</Text>
+                  <Text style={[styles.tVal, { color: "#2f6f52" }]}>−{formatMoney(discountAmount, currency)}</Text>
+                </View>
+              ) : null}
+              <View style={styles.tRow}>
+                <Text style={styles.tLabel}>Tax</Text>
+                <Text style={styles.tVal}>{formatMoney(invoice.taxTotal, currency)}</Text>
+              </View>
+              <View style={styles.grand}>
+                <Text style={styles.grandLabel}>Total</Text>
+                <Text style={styles.grandVal}>{formatMoney(invoice.total, currency)}</Text>
+              </View>
+              {invoice.amountPaid > 0 ? (
+                <>
+                  <View style={styles.tRow}>
+                    <Text style={styles.tLabel}>Amount paid</Text>
+                    <Text style={styles.tVal}>−{formatMoney(invoice.amountPaid, currency)}</Text>
+                  </View>
+                  <View style={styles.due}>
+                    <Text style={styles.dueLabel}>Balance Due</Text>
+                    <Text style={styles.dueVal}>{formatMoney(balance, currency)}</Text>
+                  </View>
+                </>
+              ) : null}
+            </View>
           </View>
-        ) : null}
+
+          {/* Notes & terms */}
+          {invoice.notes || invoice.terms ? (
+            <View style={styles.footer}>
+              {invoice.notes ? (
+                <View style={styles.footBlock}>
+                  <Text style={styles.footHead}>Notes</Text>
+                  <Text style={styles.footText}>{invoice.notes}</Text>
+                </View>
+              ) : <View style={styles.footBlock} />}
+              {invoice.terms ? (
+                <View style={styles.footBlock}>
+                  <Text style={styles.footHead}>Terms</Text>
+                  <Text style={styles.footText}>{invoice.terms}</Text>
+                </View>
+              ) : null}
+            </View>
+          ) : null}
+        </View>
+
+        {/* Page footer */}
+        <View style={styles.pageFooter} fixed>
+          <Text style={styles.pageFootText}>{business.name}</Text>
+          <Text style={styles.pageFootText}>
+            {invoice.number ?? "Draft"} · {formatMoney(invoice.total, currency)}
+          </Text>
+        </View>
       </Page>
     </Document>
   );
