@@ -1,26 +1,357 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   InvoiceFlow design system
+   A premium "financial ledger" aesthetic: deep jade accent, warm-neutral
+   paper surfaces, editorial serif headings, tabular mono figures.
+   Money-trust, not generic SaaS blue.
+   ========================================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces & structure ------------------------------------------------ */
+  --background: #f3f4f1; /* warm cool paper */
+  --surface: #ffffff;
+  --surface-2: #f9faf7;
+  --surface-3: #eef0ea;
+  --border: #e2e5df;
+  --border-strong: #d0d5cb;
+  --foreground: #17201c; /* deep ink, faint green-black */
+  --muted: #5d6b63; /* sage-gray */
+  --muted-2: #8a958d;
+
+  /* Brand accent -------------------------------------------------------- */
+  --primary: #0b6b5e; /* deep jade / evergreen */
+  --primary-hover: #085346;
+  --primary-fg: #ffffff;
+  --primary-soft: #e3f1ed; /* tint bg */
+  --primary-soft-fg: #0a5a4f;
+  --ring: #0b6b5e;
+
+  /* Warm secondary accent (copper) for decorative highlights ------------ */
+  --accent: #b3592b;
+  --accent-soft: #f6e7de;
+
+  /* Semantic ------------------------------------------------------------ */
+  --success: #12805c;
+  --success-soft: #d9f0e6;
+  --warning: #a4620a;
+  --warning-soft: #f7ead2;
+  --danger: #c23a34;
+  --danger-soft: #f6e0de;
+  --danger-hover: #a52e29;
+
+  /* Invoice status palette (bg tint / text / ring) ---------------------- */
+  --status-draft-bg: #eceef0;
+  --status-draft-fg: #5a6473;
+  --status-draft-ring: #d5d9de;
+
+  --status-unpaid-bg: #f7ead2;
+  --status-unpaid-fg: #8a5207;
+  --status-unpaid-ring: #ecd6ac;
+
+  --status-partial-bg: #e0eafb;
+  --status-partial-fg: #2451b8;
+  --status-partial-ring: #c4d6f5;
+
+  --status-paid-bg: #d9f0e6;
+  --status-paid-fg: #0a6b4c;
+  --status-paid-ring: #b6e2d0;
+
+  --status-overdue-bg: #f6e0de;
+  --status-overdue-fg: #b32e28;
+  --status-overdue-ring: #eec6c3;
+
+  --status-void-bg: #ecedee;
+  --status-void-fg: #8b929b;
+  --status-void-ring: #dcdee1;
+
+  /* Elevation ----------------------------------------------------------- */
+  --shadow-xs: 0 1px 2px 0 rgba(23, 32, 28, 0.05);
+  --shadow-sm: 0 1px 3px rgba(23, 32, 28, 0.07), 0 1px 2px -1px rgba(23, 32, 28, 0.05);
+  --shadow-md: 0 4px 12px -2px rgba(23, 32, 28, 0.10), 0 2px 6px -2px rgba(23, 32, 28, 0.06);
+  --shadow-lg: 0 16px 40px -8px rgba(23, 32, 28, 0.20), 0 6px 16px -6px rgba(23, 32, 28, 0.12);
 }
 
+/* Dark theme — applied via system preference (guarded so a manual light
+   choice wins) and via explicit [data-theme="dark"]. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #0b100e;
+    --surface: #121815;
+    --surface-2: #171f1b;
+    --surface-3: #1d2621;
+    --border: #263029;
+    --border-strong: #33413a;
+    --foreground: #e8ede9;
+    --muted: #9aa8a0;
+    --muted-2: #6f7d75;
+
+    --primary: #22b39a;
+    --primary-hover: #34c3aa;
+    --primary-fg: #04211c;
+    --primary-soft: #123029;
+    --primary-soft-fg: #6fe0c9;
+    --ring: #22b39a;
+
+    --accent: #d9814f;
+    --accent-soft: #33231a;
+
+    --success: #34c088;
+    --success-soft: #12291f;
+    --warning: #d99a3a;
+    --warning-soft: #2c2213;
+    --danger: #e06a63;
+    --danger-soft: #2e1a18;
+    --danger-hover: #ec7d76;
+
+    --status-draft-bg: #1f2830;
+    --status-draft-fg: #9fadbc;
+    --status-draft-ring: #303b45;
+
+    --status-unpaid-bg: #2c2213;
+    --status-unpaid-fg: #e0b163;
+    --status-unpaid-ring: #45361c;
+
+    --status-partial-bg: #16233d;
+    --status-partial-fg: #8fb3f2;
+    --status-partial-ring: #26375a;
+
+    --status-paid-bg: #12291f;
+    --status-paid-fg: #63d6a6;
+    --status-paid-ring: #1f4635;
+
+    --status-overdue-bg: #2e1a18;
+    --status-overdue-fg: #ec8580;
+    --status-overdue-ring: #4a2a27;
+
+    --status-void-bg: #1c2226;
+    --status-void-fg: #7c858f;
+    --status-void-ring: #2b3238;
+
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.55), 0 2px 6px -2px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 16px 40px -8px rgba(0, 0, 0, 0.65), 0 6px 16px -6px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Explicit dark override (theme toggle) */
+:root[data-theme="dark"] {
+  --background: #0b100e;
+  --surface: #121815;
+  --surface-2: #171f1b;
+  --surface-3: #1d2621;
+  --border: #263029;
+  --border-strong: #33413a;
+  --foreground: #e8ede9;
+  --muted: #9aa8a0;
+  --muted-2: #6f7d75;
+
+  --primary: #22b39a;
+  --primary-hover: #34c3aa;
+  --primary-fg: #04211c;
+  --primary-soft: #123029;
+  --primary-soft-fg: #6fe0c9;
+  --ring: #22b39a;
+
+  --accent: #d9814f;
+  --accent-soft: #33231a;
+
+  --success: #34c088;
+  --success-soft: #12291f;
+  --warning: #d99a3a;
+  --warning-soft: #2c2213;
+  --danger: #e06a63;
+  --danger-soft: #2e1a18;
+  --danger-hover: #ec7d76;
+
+  --status-draft-bg: #1f2830;
+  --status-draft-fg: #9fadbc;
+  --status-draft-ring: #303b45;
+
+  --status-unpaid-bg: #2c2213;
+  --status-unpaid-fg: #e0b163;
+  --status-unpaid-ring: #45361c;
+
+  --status-partial-bg: #16233d;
+  --status-partial-fg: #8fb3f2;
+  --status-partial-ring: #26375a;
+
+  --status-paid-bg: #12291f;
+  --status-paid-fg: #63d6a6;
+  --status-paid-ring: #1f4635;
+
+  --status-overdue-bg: #2e1a18;
+  --status-overdue-fg: #ec8580;
+  --status-overdue-ring: #4a2a27;
+
+  --status-void-bg: #1c2226;
+  --status-void-fg: #7c858f;
+  --status-void-ring: #2b3238;
+
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.55), 0 2px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 40px -8px rgba(0, 0, 0, 0.65), 0 6px 16px -6px rgba(0, 0, 0, 0.5);
+}
+
+/* Map raw variables into Tailwind v4 theme tokens so utilities like
+   bg-surface, text-muted, border-border, font-display, etc. work. */
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-fg);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-fg: var(--primary-soft-fg);
+
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-hover: var(--danger-hover);
+
+  --color-ring: var(--ring);
+
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
+}
+
+html {
+  color-scheme: light dark;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-feature-settings: "cv01", "ss01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Tabular figures everywhere money/quantities appear */
+.tabular,
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Focus ring — consistent, accessible */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Subtle paper grain / atmosphere on the app background */
+.bg-grain {
+  background-image:
+    radial-gradient(circle at 15% 0%, color-mix(in oklab, var(--primary) 6%, transparent), transparent 42%),
+    radial-gradient(circle at 100% 8%, color-mix(in oklab, var(--accent) 5%, transparent), transparent 40%);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--muted) 34%, transparent);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--muted) 55%, transparent);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
