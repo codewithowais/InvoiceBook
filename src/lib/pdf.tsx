@@ -6,8 +6,12 @@ import {
   View,
   Image,
   StyleSheet,
+  Font,
   renderToBuffer,
 } from "@react-pdf/renderer";
+
+// Never break words mid-way with a hyphen (e.g. "Busi-ness"); wrap at spaces.
+Font.registerHyphenationCallback((word) => [word]);
 import type { Invoice, InvoiceItem } from "@/db/schema";
 import type { BusinessSnapshot, CustomerSnapshot } from "@/lib/invoice-service";
 import { formatMoney, formatQty } from "@/lib/money";
@@ -48,11 +52,12 @@ const styles = StyleSheet.create({
   body: { paddingHorizontal: 44, paddingTop: 30 },
 
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 26 },
-  brandRow: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
-  monogram: { width: 34, height: 34, borderRadius: 8, backgroundColor: C.primary, color: C.white, marginRight: 10, alignItems: "center", justifyContent: "center" },
+  headerLeft: { width: "58%", flexDirection: "row", alignItems: "flex-start" },
+  monogram: { width: 34, height: 34, borderRadius: 8, backgroundColor: C.primary, marginRight: 10, marginTop: 1, alignItems: "center", justifyContent: "center" },
   monogramText: { color: C.white, fontFamily: "Helvetica-Bold", fontSize: 14 },
+  leftText: { flex: 1 },
   logo: { width: 130, maxHeight: 52, objectFit: "contain", marginBottom: 8 },
-  bizName: { fontSize: 15, fontFamily: "Helvetica-Bold", color: C.ink },
+  bizName: { fontSize: 14, fontFamily: "Helvetica-Bold", color: C.ink, marginBottom: 4 },
   addr: { color: C.muted, fontSize: 9 },
 
   right: { alignItems: "flex-end", width: "40%" },
@@ -131,23 +136,21 @@ function InvoiceDocument({ invoice, items, business, customer }: RenderInvoiceIn
         <View style={styles.body}>
           {/* Header */}
           <View style={styles.header}>
-            <View style={{ width: "56%" }}>
-              {business.logoUrl ? (
-                <Image style={styles.logo} src={business.logoUrl} />
-              ) : (
-                <View style={styles.brandRow}>
-                  <View style={styles.monogram}>
-                    <Text style={styles.monogramText}>{initials(business.name)}</Text>
-                  </View>
-                  <Text style={styles.bizName}>{business.name}</Text>
+            <View style={styles.headerLeft}>
+              {business.logoUrl ? null : (
+                <View style={styles.monogram}>
+                  <Text style={styles.monogramText}>{initials(business.name)}</Text>
                 </View>
               )}
-              {business.logoUrl ? (
-                <Text style={[styles.bizName, { marginBottom: 4 }]}>{business.name}</Text>
-              ) : null}
-              {addressLines(business).map((line, i) => (
-                <Text key={i} style={styles.addr}>{line}</Text>
-              ))}
+              <View style={styles.leftText}>
+                {business.logoUrl ? (
+                  <Image style={styles.logo} src={business.logoUrl} />
+                ) : null}
+                <Text style={styles.bizName}>{business.name}</Text>
+                {addressLines(business).map((line, i) => (
+                  <Text key={i} style={styles.addr}>{line}</Text>
+                ))}
+              </View>
             </View>
 
             <View style={styles.right}>
