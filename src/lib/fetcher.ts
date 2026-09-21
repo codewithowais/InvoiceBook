@@ -93,9 +93,18 @@ export const apiDelete = <T>(path: string, init?: ApiInit) =>
  * Normalize a list payload: some endpoints return a bare array, others a
  * `{ items: [...] }` page object. Always yields an array.
  */
-export function asArray<T>(value: T[] | { items?: T[] } | null | undefined): T[] {
-  if (Array.isArray(value)) return value;
-  if (value && Array.isArray(value.items)) return value.items;
+export function asArray<T>(value: unknown): T[] {
+  if (Array.isArray(value)) return value as T[];
+  if (value && typeof value === "object") {
+    const obj = value as Record<string, unknown>;
+    if (Array.isArray(obj.items)) return obj.items as T[];
+    // List endpoints wrap rows under an entity key alongside pagination
+    // fields (e.g. { customers: [...], page, total }). Return the first
+    // array-valued property so any such shape normalizes correctly.
+    for (const v of Object.values(obj)) {
+      if (Array.isArray(v)) return v as T[];
+    }
+  }
   return [];
 }
 

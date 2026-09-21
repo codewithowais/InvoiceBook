@@ -40,6 +40,15 @@ export const GET = handler(async (_req: Request, ctx: Ctx) => {
   const invoice = await loadInvoice(id, user.businessId);
   if (!invoice) return fail("Invoice not found", 404);
 
+  // The customer for display: the live row when it still exists, otherwise
+  // the immutable snapshot frozen onto the invoice at finalize time.
+  const [customerRow] = await db
+    .select()
+    .from(customers)
+    .where(eq(customers.id, invoice.customerId))
+    .limit(1);
+  const customer = customerRow ?? invoice.customerSnapshot ?? null;
+
   const items = await db
     .select()
     .from(invoiceItems)
@@ -76,6 +85,7 @@ export const GET = handler(async (_req: Request, ctx: Ctx) => {
   return ok({
     invoice,
     items,
+    customer,
     payments: paymentsWithUrls,
     outstanding: invoice.total - invoice.amountPaid,
     createdByName: invoice.createdBy
