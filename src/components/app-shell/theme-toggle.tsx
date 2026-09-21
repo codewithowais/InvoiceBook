@@ -5,7 +5,7 @@ import { Monitor, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Theme = "light" | "dark" | "system";
-const STORAGE_KEY = "invoiceflow-theme";
+const STORAGE_KEY = "invoicebook-theme";
 
 function apply(theme: Theme) {
   const root = document.documentElement;

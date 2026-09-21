@@ -126,7 +126,7 @@ export const GET = handler(async (req: Request) => {
     },
   });
 
-  const filename = `invoiceflow-report-${from}-${to}.csv`;
+  const filename = `invoicebook-report-${from}-${to}.csv`;
   return new Response(stream, {
     status: 200,
     headers: {

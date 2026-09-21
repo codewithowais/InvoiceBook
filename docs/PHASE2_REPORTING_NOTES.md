@@ -57,7 +57,7 @@ billed/outstanding + payments collected), merged in JS and sliced to 10.
 
 ### `GET /api/reports/export?from&to`
 Admin-only. Same range handling. Streams `text/csv` (`ReadableStream`) with
-`Content-Disposition: attachment; filename="invoiceflow-report-<from>-<to>.csv"`.
+`Content-Disposition: attachment; filename="invoicebook-report-<from>-<to>.csv"`.
 Invoice-level rows for invoices with `issueDate` in range (non-deleted, excludes
 drafts; `void` kept for the accountant's record), ordered by issue date then
 number. Columns: Invoice number, Customer, Status, Issue date, Due date,

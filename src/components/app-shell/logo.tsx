@@ -28,7 +28,7 @@ export function Logo({
       </span>
       {withWordmark ? (
         <span className="font-display text-[1.15rem] font-semibold leading-none tracking-tight text-foreground">
-          Invoice<span className="text-primary">Flow</span>
+          Invoice<span className="text-primary">Book</span>
         </span>
       ) : null}
     </span>
