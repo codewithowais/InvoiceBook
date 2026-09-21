@@ -67,7 +67,8 @@ const styles = StyleSheet.create({
   metaRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 2 },
   metaLabel: { color: C.muted, fontSize: 9 },
   metaValue: { color: C.ink, fontFamily: "Helvetica-Bold", fontSize: 9.5 },
-  badge: { marginTop: 10, alignSelf: "flex-end", paddingVertical: 4, paddingHorizontal: 12, borderRadius: 20, fontSize: 8.5, fontFamily: "Helvetica-Bold", textAlign: "center" },
+  badge: { marginTop: 10, alignSelf: "flex-end", paddingVertical: 4, paddingHorizontal: 12, borderRadius: 20, alignItems: "center", justifyContent: "center" },
+  badgeText: { fontSize: 8.5, fontFamily: "Helvetica-Bold", textAlign: "center", lineHeight: 1 },
   amountDue: { fontFamily: "Helvetica-Bold", fontSize: 18, color: C.ink },
   bank: { marginTop: 22, backgroundColor: C.softer, borderRadius: 6, padding: 12, borderWidth: 1, borderColor: C.line, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   bankText: { flex: 1, paddingRight: 14 },
@@ -180,9 +181,11 @@ function InvoiceDocument({
                   <Text style={styles.metaValue}>{formatDate(invoice.dueDate)}</Text>
                 </View>
               </View>
-              <Text style={[styles.badge, { backgroundColor: status.bg, color: status.fg }]}>
-                {statusLabel(invoice.status).toUpperCase()}
-              </Text>
+              <View style={[styles.badge, { backgroundColor: status.bg }]}>
+                <Text style={[styles.badgeText, { color: status.fg }]}>
+                  {statusLabel(invoice.status).toUpperCase()}
+                </Text>
+              </View>
             </View>
           </View>
 

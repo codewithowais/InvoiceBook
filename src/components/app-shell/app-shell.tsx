@@ -5,11 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BarChart3,
+  ChevronsLeft,
+  ChevronsRight,
   FileText,
   LayoutDashboard,
   Menu,
-  PanelLeftClose,
-  PanelLeftOpen,
+  Package,
   Repeat,
   ScrollText,
   Settings,
@@ -45,6 +46,7 @@ const NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/invoices", label: "Invoices", icon: FileText },
   { href: "/customers", label: "Customers", icon: Users },
+  { href: "/products", label: "Products", icon: Package },
   { href: "/recurring", label: "Recurring", icon: Repeat },
   { href: "/reports", label: "Reports", icon: BarChart3 },
   { href: "/team", label: "Team", icon: UserCog, adminOnly: true },
@@ -77,7 +79,7 @@ function NavLinks({
             href={href}
             onClick={onNavigate}
             aria-current={active ? "page" : undefined}
-            title={collapsed ? label : undefined}
+            aria-label={collapsed ? label : undefined}
             className={cn(
               "group relative flex items-center rounded-lg text-sm font-medium transition-colors",
               collapsed ? "justify-center px-0 py-2.5" : "gap-3 px-3 py-2",
@@ -102,7 +104,16 @@ function NavLinks({
               )}
               aria-hidden
             />
-            {collapsed ? null : label}
+            {collapsed ? (
+              <span
+                role="tooltip"
+                className="pointer-events-none absolute left-[calc(100%+0.6rem)] top-1/2 z-50 hidden -translate-y-1/2 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background opacity-0 shadow-lg transition-opacity group-hover:block group-hover:opacity-100"
+              >
+                {label}
+              </span>
+            ) : (
+              label
+            )}
           </Link>
         );
       })}
@@ -176,7 +187,14 @@ export function AppShell({
             <Logo withWordmark={!collapsed} />
           </Link>
         </div>
-        <div className={cn("flex-1 overflow-y-auto py-4", collapsed ? "px-2" : "px-3")}>
+        <div
+          className={cn(
+            "flex-1 py-4",
+            // Collapsed: overflow visible so hover tooltips escape the rail
+            // (few items, no scroll needed). Expanded: normal scroll area.
+            collapsed ? "overflow-visible px-2" : "overflow-y-auto px-3",
+          )}
+        >
           <NavLinks pathname={pathname} role={user.role} collapsed={collapsed} />
         </div>
         <div className={cn("border-t border-border", collapsed ? "p-2" : "p-4")}>
@@ -201,10 +219,10 @@ export function AppShell({
             )}
           >
             {collapsed ? (
-              <PanelLeftOpen className="size-[1.15rem] shrink-0" aria-hidden />
+              <ChevronsRight className="size-[1.15rem] shrink-0" aria-hidden />
             ) : (
               <>
-                <PanelLeftClose className="size-[1.15rem] shrink-0" aria-hidden />
+                <ChevronsLeft className="size-[1.15rem] shrink-0" aria-hidden />
                 Collapse
               </>
             )}
