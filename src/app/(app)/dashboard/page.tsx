@@ -33,6 +33,7 @@ export default function DashboardPage() {
   const { data, loading, error, refetch } = useAsync<DashboardSummary>(
     () => apiGet<DashboardSummary>("/api/dashboard"),
     [],
+    "/api/dashboard",
   );
 
   return (

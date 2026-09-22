@@ -33,6 +33,7 @@ export function TrashTab() {
   const { data, loading, error, refetch, setData } = useAsync<TrashList>(
     () => apiGet<TrashList>("/api/trash"),
     [],
+    "/api/trash",
   );
 
   const [target, setTarget] = useState<TrashItem | null>(null);

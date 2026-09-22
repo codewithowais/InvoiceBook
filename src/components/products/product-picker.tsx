@@ -71,7 +71,7 @@ function PickerBody({
       "/api/products?activeOnly=1",
     );
     return asArray(res);
-  }, []);
+  }, [], "products:active");
 
   const products = data ?? [];
   const filtered = useMemo(() => {

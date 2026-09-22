@@ -85,7 +85,7 @@ export function PlanEditor({
       "/api/customers",
     );
     return asArray(res);
-  }, []);
+  }, [], "customers:");
   const customers = customersQuery.data ?? [];
 
   const totals = useMemo(

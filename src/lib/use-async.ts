@@ -9,39 +9,69 @@ type State<T> = {
   error: string | null;
 };
 
+// Process-lived stale-while-revalidate cache, keyed by the caller's `cacheKey`.
+// Revisiting a page shows the last value instantly while a fresh fetch runs in
+// the background. Cleared on a full reload (it lives only in memory).
+const swrCache = new Map<string, unknown>();
+
+/** Drop cached entries (e.g. after a mutation). Prefix match, or all. */
+export function invalidateCache(prefix?: string) {
+  if (!prefix) {
+    swrCache.clear();
+    return;
+  }
+  for (const key of swrCache.keys()) {
+    if (key.startsWith(prefix)) swrCache.delete(key);
+  }
+}
+
 /**
  * Small client hook for GET-style data loading with loading / error / refetch.
- * `deps` re-runs the fetch (e.g. when search or filter changes); `refetch()`
- * forces a reload. It synchronises the component with an external system (the
- * API), which is the intended use of an effect here. (Frontend-owned helper.)
+ * `deps` re-runs the fetch; `refetch()` forces a reload. Pass a `cacheKey`
+ * (typically the request URL) to enable stale-while-revalidate: the cached
+ * value renders immediately and a background fetch keeps it fresh.
  */
 export function useAsync<T>(
   fn: () => Promise<T>,
   deps: unknown[] = [],
+  cacheKey?: string,
 ): State<T> & { refetch: () => void; setData: (d: T) => void } {
-  const [state, setState] = useState<State<T>>({
-    data: null,
-    loading: true,
-    error: null,
+  const [state, setState] = useState<State<T>>(() => {
+    const cached = cacheKey ? swrCache.get(cacheKey) : undefined;
+    return cached !== undefined
+      ? { data: cached as T, loading: false, error: null }
+      : { data: null, loading: true, error: null };
   });
   const [nonce, setNonce] = useState(0);
   const reqId = useRef(0);
   const fnRef = useRef(fn);
+  const keyRef = useRef(cacheKey);
 
-  // Keep the latest fetcher without making it a dependency (it's usually an
-  // inline closure that changes every render).
   useEffect(() => {
     fnRef.current = fn;
+    keyRef.current = cacheKey;
   });
 
   useEffect(() => {
     const id = ++reqId.current;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setState((s) => ({ ...s, loading: true, error: null }));
+    const key = keyRef.current;
+    const cached = key ? swrCache.get(key) : undefined;
+
+    // Show cached data instantly (revalidate quietly); otherwise show skeleton.
+    if (cached !== undefined) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setState({ data: cached as T, loading: false, error: null });
+    } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setState((s) => ({ ...s, loading: true, error: null }));
+    }
+
     fnRef
       .current()
       .then((data) => {
-        if (id === reqId.current) setState({ data, loading: false, error: null });
+        if (id !== reqId.current) return;
+        if (key) swrCache.set(key, data);
+        setState({ data, loading: false, error: null });
       })
       .catch((err: unknown) => {
         if (id !== reqId.current) return;
@@ -56,6 +86,7 @@ export function useAsync<T>(
 
   const refetch = useCallback(() => setNonce((n) => n + 1), []);
   const setData = useCallback((d: T) => {
+    if (keyRef.current) swrCache.set(keyRef.current, d);
     setState((s) => ({ ...s, data: d }));
   }, []);
 

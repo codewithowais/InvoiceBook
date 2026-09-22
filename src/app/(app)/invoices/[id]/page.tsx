@@ -45,6 +45,7 @@ export default function InvoiceDetailPage() {
   const { data, loading, error, refetch } = useAsync<InvoiceDetail>(
     () => apiGet<InvoiceDetail>(`/api/invoices/${id}`),
     [id],
+    `invoice:${id}`,
   );
 
   const [payOpen, setPayOpen] = useState(false);

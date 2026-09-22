@@ -39,6 +39,7 @@ export default function CustomerDetailPage() {
   const { data, loading, error, refetch, setData } = useAsync<CustomerDetail>(
     () => apiGet<CustomerDetail>(`/api/customers/${id}`),
     [id],
+    `customer:${id}`,
   );
 
   const [editOpen, setEditOpen] = useState(false);

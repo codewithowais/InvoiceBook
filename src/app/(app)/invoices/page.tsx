@@ -41,6 +41,7 @@ export default function InvoicesPage() {
       return asArray(res);
     },
     [status, debounced, sort],
+    `invoices:${status}:${debounced}:${sort}`,
   );
 
   const invoices = data ?? [];

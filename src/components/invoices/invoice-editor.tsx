@@ -93,7 +93,7 @@ export function InvoiceEditor({
       "/api/customers",
     );
     return asArray(res);
-  }, []);
+  }, [], "customers:");
 
   const discountValueForCompute =
     discountType === "none"

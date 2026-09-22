@@ -48,6 +48,7 @@ export default function RecurringPage() {
       return asArray(res);
     },
     [],
+    "/api/recurring-plans",
   );
 
   const [busyId, setBusyId] = useState<string | null>(null);

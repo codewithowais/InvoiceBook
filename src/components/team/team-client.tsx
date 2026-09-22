@@ -28,6 +28,7 @@ export function TeamClient({ currentUserId }: { currentUserId: string }) {
   const { data, loading, error, refetch } = useAsync<TeamOverview>(
     () => apiGet<TeamOverview>("/api/team"),
     [],
+    "/api/team",
   );
 
   const [inviteOpen, setInviteOpen] = useState(false);

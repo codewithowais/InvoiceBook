@@ -50,6 +50,7 @@ export function ReminderSettings() {
   const { data, loading, error, refetch } = useAsync<ReminderSettings>(
     () => apiGet<ReminderSettings>("/api/reminders/settings"),
     [],
+    "/api/reminders/settings",
   );
 
   const [form, setForm] = useState<Form | null>(null);

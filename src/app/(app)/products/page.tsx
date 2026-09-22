@@ -46,7 +46,7 @@ export default function ProductsPage() {
       `/api/products${qs}`,
     );
     return asArray(res);
-  }, [debounced]);
+  }, [debounced], `products:${debounced}`);
 
   const all = data ?? [];
   const products = useMemo(() => {

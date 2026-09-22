@@ -22,6 +22,7 @@ export default function EditInvoicePage() {
   const { data, loading, error, refetch } = useAsync<InvoiceDetail>(
     () => apiGet<InvoiceDetail>(`/api/invoices/${id}`),
     [id],
+    `invoice:${id}`,
   );
 
   // Only drafts are editable; bounce finalized invoices to their detail page.

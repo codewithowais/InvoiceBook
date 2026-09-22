@@ -48,6 +48,7 @@ export function ReportsClient() {
         `/api/reports?from=${encodeURIComponent(range.from)}&to=${encodeURIComponent(range.to)}`,
       ),
     [range.from, range.to],
+    `reports:${range.from}:${range.to}`,
   );
 
   const exportHref = `/api/reports/export?from=${encodeURIComponent(range.from)}&to=${encodeURIComponent(range.to)}`;

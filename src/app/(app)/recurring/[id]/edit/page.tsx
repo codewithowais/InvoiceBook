@@ -23,7 +23,7 @@ export default function EditRecurringPlanPage() {
       `/api/recurring-plans/${id}`,
     );
     return unwrapPlan(res);
-  }, [id]);
+  }, [id], `plan:${id}`);
 
   if (loading)
     return (

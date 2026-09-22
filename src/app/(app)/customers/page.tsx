@@ -37,6 +37,7 @@ export default function CustomersPage() {
       return asArray(res);
     },
     [debounced],
+    `customers:${debounced}`,
   );
 
   const customers = data ?? [];

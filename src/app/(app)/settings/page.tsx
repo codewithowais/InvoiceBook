@@ -60,6 +60,7 @@ export default function SettingsPage() {
   const { data, loading, error, refetch } = useAsync<Business>(
     () => apiGet<Business>("/api/business"),
     [],
+    "/api/business",
   );
 
   const [form, setForm] = useState<Form | null>(null);
