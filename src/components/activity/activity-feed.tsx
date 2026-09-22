@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ScrollText } from "lucide-react";
+import { ChevronLeft, ChevronRight, ScrollText } from "lucide-react";
 import { apiGet, ApiError } from "@/lib/fetcher";
 import { formatMoney } from "@/lib/money";
 import { Button } from "@/components/ui/button";
@@ -82,7 +82,7 @@ export function ActivityFeedTab() {
           feedPath(nextPage, action, entityType),
         );
         if (id !== reqId.current) return;
-        setItems((prev) => (replace ? data.items : [...prev, ...data.items]));
+        setItems(data.items);
         setPage(data.page);
         setHasMore(data.hasMore);
       } catch (err) {
@@ -186,21 +186,29 @@ export function ActivityFeedTab() {
             })}
           </ol>
 
-          {hasMore ? (
-            <div className="mt-5 flex justify-center">
+          {page > 1 || hasMore ? (
+            <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
               <Button
                 variant="outline"
-                loading={loadingMore}
+                size="sm"
+                disabled={page <= 1 || loadingMore}
+                onClick={() => load(page - 1, false)}
+              >
+                <ChevronLeft className="size-4" aria-hidden />
+                Previous
+              </Button>
+              <span className="text-xs font-medium text-muted-2">Page {page}</span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!hasMore || loadingMore}
                 onClick={() => load(page + 1, false)}
               >
-                Load more
+                Next
+                <ChevronRight className="size-4" aria-hidden />
               </Button>
             </div>
-          ) : (
-            <p className="mt-5 text-center text-xs text-muted-2">
-              End of activity log
-            </p>
-          )}
+          ) : null}
         </>
       )}
     </div>
