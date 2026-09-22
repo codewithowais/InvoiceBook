@@ -1,4 +1,5 @@
 import { and, eq, isNull } from "drizzle-orm";
+import { z } from "zod";
 import { db } from "@/db";
 import { recurringPlans } from "@/db/schema";
 import { requireAdmin } from "@/lib/session";
@@ -11,9 +12,20 @@ export const runtime = "nodejs";
 
 type Ctx = { params: Promise<{ id: string }> };
 
-export const POST = handler(async (_req: Request, ctx: Ctx) => {
+const bodySchema = z.object({
+  issueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+});
+
+export const POST = handler(async (req: Request, ctx: Ctx) => {
   const user = await requireAdmin();
   const { id } = await ctx.params;
+
+  let issueDate: string | null | undefined;
+  try {
+    issueDate = bodySchema.parse((await req.json()) ?? {}).issueDate;
+  } catch {
+    issueDate = undefined;
+  }
 
   const [plan] = await db
     .select()
@@ -33,7 +45,9 @@ export const POST = handler(async (_req: Request, ctx: Ctx) => {
 
   // Run one cycle immediately (same routine as the cron): create the invoice
   // and advance the plan's counters/nextRunDate atomically.
-  const invoice = await db.transaction((tx) => runPlanCycle(tx, plan, user));
+  const invoice = await db.transaction((tx) =>
+    runPlanCycle(tx, plan, user, issueDate),
+  );
 
   await logActivity({
     businessId: user.businessId,

@@ -230,6 +230,9 @@ export async function generateInvoiceFromPlan(
   // to the plan's author (`plan.createdBy`) so the FK is always valid, even
   // when the cron (no real session) triggers generation.
   _user: CurrentUser,
+  // Optional issue-date override for a manual "generate for month X"; the cron
+  // and default flow use the plan's scheduled `nextRunDate`.
+  issueDateOverride?: string | null,
 ): Promise<Invoice> {
   const [customer] = await tx
     .select()
@@ -257,7 +260,7 @@ export async function generateInvoiceFromPlan(
     discountValue: 0,
   });
 
-  const issueDate = plan.nextRunDate ?? toISODate(new Date());
+  const issueDate = issueDateOverride || plan.nextRunDate || toISODate(new Date());
   const dueDateObj = new Date(issueDate);
   dueDateObj.setDate(dueDateObj.getDate() + 30);
   const dueDate = toISODate(dueDateObj);
@@ -320,8 +323,9 @@ export async function runPlanCycle(
   tx: Tx,
   plan: RecurringPlan,
   user: CurrentUser,
+  issueDateOverride?: string | null,
 ): Promise<Invoice> {
-  const invoice = await generateInvoiceFromPlan(tx, plan, user);
+  const invoice = await generateInvoiceFromPlan(tx, plan, user, issueDateOverride);
 
   const cyclesRun = plan.cyclesRun + 1;
   const prev = new Date(plan.nextRunDate);

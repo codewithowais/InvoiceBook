@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { EmptyState, ErrorState } from "@/components/ui/empty-state";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { GenerateInvoiceDialog } from "@/components/recurring/generate-dialog";
 import { useToast } from "@/components/ui/toast";
 
 const STATUS_VARIANT = {
@@ -78,26 +78,6 @@ export default function RecurringPage() {
     }
   }
 
-  async function generateNow() {
-    if (!generatePlan) return;
-    try {
-      await apiPost(`/api/recurring-plans/${generatePlan.id}/generate`);
-      toast({
-        variant: "success",
-        title: "Invoice generated",
-        description: "A new invoice was created from this plan.",
-      });
-      setGeneratePlan(null);
-      refetch();
-    } catch (err) {
-      toast({
-        variant: "error",
-        title: "Couldn't generate",
-        description: err instanceof ApiError ? err.message : undefined,
-      });
-      setGeneratePlan(null);
-    }
-  }
 
   return (
     <div>
@@ -216,17 +196,10 @@ export default function RecurringPage() {
         )}
       </Card>
 
-      <ConfirmDialog
-        open={Boolean(generatePlan)}
+      <GenerateInvoiceDialog
+        plan={generatePlan}
         onClose={() => setGeneratePlan(null)}
-        onConfirm={generateNow}
-        title="Generate an invoice now?"
-        description={
-          generatePlan
-            ? `This creates the next finalized invoice for ${generatePlan.customerName} immediately, without waiting for the schedule.`
-            : ""
-        }
-        confirmLabel="Generate invoice"
+        onGenerated={refetch}
       />
     </div>
   );
