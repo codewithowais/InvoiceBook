@@ -4,5 +4,7 @@
  * the app shell stays put. Respects prefers-reduced-motion (see globals.css).
  */
 export default function AppTemplate({ children }: { children: React.ReactNode }) {
-  return <div className="animate-fade-in">{children}</div>;
+  return (
+    <div style={{ animation: "fade-in 0.22s ease both" }}>{children}</div>
+  );
 }

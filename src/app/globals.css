@@ -314,6 +314,17 @@ body {
     transform: translateX(100%);
   }
 }
+@keyframes loading-slide {
+  0% {
+    transform: translateX(-120%);
+  }
+  60% {
+    transform: translateX(220%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
 @keyframes fade-in {
   from {
     opacity: 0;
